@@ -8,13 +8,24 @@
   <title>Portfolio Master Hub | Data Analyst &amp; Automation Lead</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-hover: #243449;
-      --border: #334155;
+      /* Paleta ciberpunk (alineada con la cabecera de LinkedIn) */
+      --bg-dark: #000000;
+      --card-dark: rgba(10, 15, 25, 0.95);
+      --accent-blue: #00FFFF;
+      --border-subtle: rgba(0, 255, 255, 0.15);
+      --text-muted: #cbd5e1;
+      --impact-number: #00FFFF;
+      --primary-glow: rgba(0, 255, 255, 0.4);
+      --card-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
+
+      /* Alias: las reglas existentes siguen usando estos nombres */
+      --bg: var(--bg-dark);
+      --card: var(--card-dark);
+      --card-hover: rgba(14, 22, 36, 0.97);
+      --border: var(--border-subtle);
       --text: #e2e8f0;
-      --muted: #94a3b8;
-      --blue: #38bdf8;
+      --muted: var(--text-muted);
+      --blue: var(--accent-blue);
       --green: #4ade80;
       --radius: 14px;
     }
@@ -97,6 +108,69 @@
 
     @media (max-width: 640px) { nav ul { display: none; } .hero { padding-top: 64px; } }
     @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+    /* ===== CSS overrides: estética ciberpunk / high-tech (solo estilos, sin tocar el DOM) ===== */
+    body { background: var(--bg-dark); }
+    nav { background: rgba(0, 0, 0, .85); border-bottom-color: var(--border-subtle); }
+
+    /* Hero: profundidad + marca de agua de trazas de circuito (5%) */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      width: min(1120px, 100% - 32px);
+      margin: 24px auto 0;
+      border-radius: 20px;
+      background: linear-gradient(160deg, #020202, #080a10, #020202);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 15px rgba(0, 255, 255, 0.1);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .05;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400' fill='none' stroke='%2300FFFF' stroke-width='1.5'%3E%3Cpath d='M0 80h120l40 40h140M0 200h80l30-30h100l40 40h150M60 400V300l40-40h120M300 400V320l-40-40M200 0v60l40 40h160'/%3E%3Ccircle cx='120' cy='80' r='4'/%3E%3Ccircle cx='300' cy='120' r='4'/%3E%3Ccircle cx='240' cy='170' r='4'/%3E%3Ccircle cx='220' cy='260' r='4'/%3E%3Ccircle cx='400' cy='100' r='4'/%3E%3C/svg%3E");
+      background-size: 400px 400px;
+    }
+    .hero > .container { position: relative; z-index: 1; }
+
+    /* Titulares: blanco / cian muy claro */
+    h1, .project-card h3 { color: #ffffff; }
+    h1 .grad { background: linear-gradient(90deg, #00FFFF, #b3ffff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    /* Módulos iluminados de placa base */
+    .metric, .project-card, .box {
+      background-color: var(--card-dark);
+      border: 1px solid rgba(0, 255, 255, 0.1);
+      box-shadow: var(--card-shadow);
+      transition: transform .18s, border-color .18s, box-shadow .18s, background-color .18s;
+    }
+    .metric:hover, .project-card:hover, .box:hover {
+      background-color: var(--card-hover);
+      border-color: rgba(0, 255, 255, 0.5);
+      box-shadow: 0 6px 24px var(--primary-glow), 0 0 0 1px rgba(0, 255, 255, 0.15);
+    }
+
+    /* Métricas de impacto en cian */
+    .metric .value, .metric .value.blue { color: var(--impact-number); text-shadow: 0 0 14px var(--primary-glow); }
+
+    /* Filtros: estado activo con glow */
+    .filter-btn { border-color: rgba(0, 255, 255, 0.25); }
+    .filter-btn:hover { color: var(--accent-blue); border-color: var(--accent-blue); }
+    .filter-btn[aria-pressed="true"] {
+      background: rgba(0, 255, 255, 0.12);
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+      text-shadow: 0 0 8px var(--accent-blue), 0 0 18px var(--primary-glow);
+      box-shadow: 0 0 14px var(--primary-glow), inset 0 0 10px rgba(0, 255, 255, 0.12);
+    }
+
+    /* Badges, tags y botones coherentes con el cian */
+    .tag { background: rgba(0, 255, 255, 0.1); }
+    .btn.primary { box-shadow: 0 0 16px var(--primary-glow); }
+    .btn.primary:hover { background: #66ffff; }
+    .btn.ghost:hover { background: rgba(0, 255, 255, 0.1); }
   </style>
 </head>
 <body>
