@@ -1,277 +1,511 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
-  <meta name="description" content="Portafolio de Senior Data Analyst & Process Automation Lead: BI, SSoT, ETL y automatización en banca y seguros.">
-  <title>Portfolio Master Hub | Data Analyst &amp; Automation Lead</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-hover: #243449;
-      --border: #334155;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --blue: #38bdf8;
-      --green: #4ade80;
-      --radius: 14px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
-    a { color: var(--blue); text-decoration: none; }
-    a:focus-visible, button:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
-    .container { width: min(1120px, 100% - 32px); margin-inline: auto; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J. Chirinos | Senior Data Analyst & AI Automation Lead</title>
+<!-- Fuentes y Fuentes de Íconos (para replicar LinkedIn) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;600&display=swap');
 
-    /* Nav */
-    nav { position: sticky; top: 0; z-index: 10; background: rgba(15,23,42,.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
-    nav .container { display: flex; justify-content: space-between; align-items: center; padding-block: 14px; }
-    .brand { font-weight: 700; letter-spacing: .5px; }
-    .brand span { color: var(--blue); }
-    nav ul { display: flex; gap: 22px; list-style: none; font-size: .92rem; }
-    nav ul a { color: var(--muted); }
-    nav ul a:hover { color: var(--text); }
+  :root {
+    --bg-deep-dark: #020617; /* Negro azulado de LinkedIn */
+    --card-dark: #0b1120;
+    --accent-blue: #00f7ff; /* Cian de image_0.png */
+    --accent-blue-deep: #1d4ed8;
+    --accent-green: #4ade80;
+    --accent-green-bg: rgba(74, 222, 128, 0.08);
+    --accent-gold: #f59e0b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-glowing: rgba(0, 247, 255, 0.25);
+    --border-green: rgba(74, 222, 128, 0.25);
+  }
 
-    /* Hero */
-    .hero { padding: 96px 0 72px; text-align: center; background: radial-gradient(ellipse at top, rgba(56,189,248,.12), transparent 60%); }
-    .badge { display: inline-block; padding: 4px 14px; border: 1px solid var(--green); border-radius: 999px; color: var(--green); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
-    h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.15; margin: 22px 0 16px; }
-    h1 .grad { background: linear-gradient(90deg, var(--blue), var(--green)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .hero p { color: var(--muted); max-width: 680px; margin-inline: auto; font-size: 1.08rem; }
-    .cta { display: flex; gap: 14px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
-    .btn { padding: 12px 26px; border-radius: 10px; font-weight: 600; border: 1px solid var(--blue); }
-    .btn.primary { background: var(--blue); color: var(--bg); }
-    .btn.primary:hover { background: #7dd3fc; }
-    .btn.ghost:hover { background: rgba(56,189,248,.1); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    section { padding: 72px 0; }
-    h2 { font-size: 1.8rem; margin-bottom: 8px; }
-    .lead { color: var(--muted); margin-bottom: 36px; }
-    h2::after { content: ""; display: block; width: 56px; height: 3px; margin-top: 10px; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 2px; }
+  body {
+    background-color: var(--bg-deep-dark);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    padding: 10px;
+    line-height: 1.5;
+    /* Textura de circuito sutil de fondo global */
+    background-image: url('https://www.transparenttextures.com/patterns/pcb.png');
+    background-repeat: repeat;
+    background-opacity: 0.1;
+  }
 
-    /* Metrics */
-    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
-    .metric { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; }
-    .metric .value { font-size: 2.6rem; font-weight: 800; color: var(--green); line-height: 1.1; }
-    .metric .value.blue { color: var(--blue); }
-    .metric .value.text { font-size: 1.5rem; padding-block: .55rem; }
-    .metric h3 { margin: 10px 0 6px; font-size: 1.05rem; }
-    .metric p { color: var(--muted); font-size: .92rem; }
+  .main-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
 
-    /* Filters */
-    .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
-    .filter-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 7px 18px; font: inherit; font-size: .9rem; cursor: pointer; transition: all .15s; }
-    .filter-btn:hover { color: var(--text); border-color: var(--blue); }
-    .filter-btn[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: var(--bg); font-weight: 600; }
+  /* ---------------- HERO SECTION: THE VISUAL MATCH ---------------- */
+  .hero-container {
+    background-image: url('image_0.png'); /* INTEGRACIÓN DIRECTA */
+    background-size: cover;
+    background-position: left center;
+    background-repeat: no-repeat;
+    border: 1px solid var(--border-glowing);
+    border-radius: 18px;
+    padding: 45px;
+    box-shadow: 0 10px 40px rgba(0,247,255,0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 480px; /* Asegura que la imagen se vea */
+    position: relative;
+    overflow: hidden;
+  }
 
-    /* Cards */
-    .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; }
-    .project-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; display: flex; flex-direction: column; gap: 12px; transition: transform .18s, border-color .18s, background .18s; }
-    .project-card:hover { transform: translateY(-4px); border-color: var(--blue); background: var(--card-hover); }
-    .project-card[hidden] { display: none; }
-    .org { color: var(--blue); font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
-    .project-card h3 { font-size: 1.2rem; }
-    .project-card p { color: var(--muted); font-size: .95rem; }
-    .project-card ul { color: var(--muted); font-size: .92rem; padding-left: 18px; }
-    .project-card li::marker { color: var(--green); }
-    .highlight { color: var(--green); font-weight: 700; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
-    .tag { font-size: .74rem; padding: 2px 10px; border-radius: 999px; background: rgba(56,189,248,.12); color: var(--blue); }
-    .empty { color: var(--muted); text-align: center; padding: 30px; }
+  /* Capa de degradado sobre la imagen para legibilidad */
+  .hero-container::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(2,6,23,0.7) 0%, rgba(2,6,23,0.95) 100%);
+    z-index: 1;
+  }
 
-    /* Stack / roadmap */
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-    .box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
-    .box h3 { margin-bottom: 8px; }
-    .box p { color: var(--muted); font-size: .93rem; }
-    .soon { display: inline-block; margin-top: 12px; font-size: .75rem; padding: 2px 10px; border-radius: 999px; border: 1px dashed var(--green); color: var(--green); }
+  .hero-content-inner {
+    position: relative;
+    z-index: 2; /* Sobre el degradado */
+    width: 100%;
+    margin-top: -10px;
+    margin-left: 20px;
+  }
 
-    footer { border-top: 1px solid var(--border); padding: 32px 0; text-align: center; color: var(--muted); font-size: .88rem; }
+  .hero-badges-wrapper {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-left: 20px;
+  }
 
-    @media (max-width: 640px) { nav ul { display: none; } .hero { padding-top: 64px; } }
-    @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-  </style>
+  /* Estilización de Badges como los Nodos de LinkedIn */
+  .badge-holographic {
+    background: rgba(0, 247, 255, 0.08);
+    color: var(--accent-blue);
+    border: 1px solid rgba(0, 247, 255, 0.4);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 10px rgba(0, 247, 255, 0.2);
+    transition: box-shadow 0.3s ease;
+  }
+  .badge-holographic:hover {
+    box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+  }
+
+  h1 {
+    font-size: 2.8rem;
+    margin-bottom: 5px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-shadow: 0 0 20px rgba(255,255,255,0.6);
+  }
+
+  .typewriter-text {
+    font-family: 'Fira Code', monospace;
+    color: var(--accent-blue);
+    font-size: 1.25rem;
+    height: 35px;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    background-color: var(--accent-blue);
+    animation: blink 0.8s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .stats-grid {
+    width: calc(100% + 40px);
+    margin-left: -20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 15px;
+    margin-top: auto; /* Al fondo */
+    z-index: 2;
+  }
+
+  .stat-card {
+    background: rgba(11, 17, 32, 0.9);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 10px 30px rgba(0,247,255,0.2);
+  }
+
+  .stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent-green);
+    text-shadow: 0 0 15px rgba(74, 222, 128, 0.5);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  /* ---------------- PORTFOLIO Y FILTROS ---------------- */
+  .portfolio-card {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    color: #0f172a;
+  }
+
+  .portfolio-header {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 20px 28px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .portfolio-header span {
+    font-size: 0.9rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+  }
+
+  .filter-radios { display: none; }
+
+  .filter-labels {
+    display: flex;
+    background: #f1f5f9;
+    border-bottom: 1px solid #cbd5e1;
+    overflow-x: auto;
+    padding: 14px 24px;
+    gap: 12px;
+  }
+
+  .filter-label {
+    padding: 10px 22px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #64748b;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .filter-label:hover { color: #0284c7; border-color: #0284c7; }
+
+  #filter-all:checked ~ .filter-labels label[for="filter-all"],
+  #filter-bi:checked ~ .filter-labels label[for="filter-bi"],
+  #filter-ai:checked ~ .filter-labels label[for="filter-ai"],
+  #filter-auto:checked ~ .filter-labels label[for="filter-auto"] {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+  }
+
+  .grid-projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 20px;
+    padding: 28px;
+  }
+
+  .project-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Sutil nodo holográfico de fondo en las tarjetas */
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(0, 247, 255, 0.1) 0%, rgba(255,255,255,0) 70%);
+    z-index: 1;
+  }
+
+  .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border-color: #cbd5e1;
+  }
+
+  .project-company {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #0284c7;
+    margin-bottom: 7px;
+    position: relative; z-index: 2;
+  }
+
+  .project-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 10px;
+    line-height: 1.3;
+    position: relative; z-index: 2;
+  }
+
+  .project-desc {
+    font-size: 0.88rem;
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    position: relative; z-index: 2;
+  }
+
+  .project-stack {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 16px;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    position: relative; z-index: 2;
+    font-family: 'Fira Code', monospace;
+  }
+
+  .metric-badge {
+    background: var(--accent-green-bg);
+    border: 1px solid var(--border-green);
+    color: #166534;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    position: relative; z-index: 2;
+  }
+
+  /* Lógica de Filtrado */
+  #filter-bi:checked ~ .grid-projects .project-card:not(.cat-bi) { display: none; }
+  #filter-ai:checked ~ .grid-projects .project-card:not(.cat-ai) { display: none; }
+  #filter-auto:checked ~ .grid-projects .project-card:not(.cat-auto) { display: none; }
+</style>
 </head>
 <body>
-  <nav aria-label="Principal">
-    <div class="container">
-      <div class="brand">JW<span>-Solutions</span></div>
-      <ul>
-        <li><a href="#impacto">Impacto</a></li>
-        <li><a href="#proyectos">Proyectos</a></li>
-        <li><a href="#ecosistema">Ecosistema</a></li>
-      </ul>
-    </div>
-  </nav>
 
-  <header class="hero">
-    <div class="container">
-      <span class="badge">Portfolio Master Hub</span>
-      <h1>Senior Data Analyst &amp; <span class="grad">Process Automation Lead</span></h1>
-      <p>Convierto operaciones manuales en sistemas medibles: modelos de datos con fuente única de verdad (SSoT), tableros de gestión y pipelines automatizados para banca y seguros.</p>
-      <div class="cta">
-        <a class="btn primary" href="#proyectos">Ver proyectos</a>
-        <a class="btn ghost" href="#impacto">Métricas de impacto</a>
+<div class="main-wrapper">
+
+  <!-- HERO SECTION: THE VISUAL MATCH WITH IMAGE_0.PNG -->
+  <div class="hero-container">
+    
+    <div class="hero-badges-wrapper">
+      <span class="badge-holographic"><i class="fas fa-chart-pie"></i> Analytics & BI Senior</span>
+      <span class="badge-holographic badge-green"><i class="fas fa-brain"></i> AI & Prompt Engineering</span>
+      <span class="badge-holographic"><i class="fas fa-cloud"></i> Banca, Seguros & Finanzas</span>
+    </div>
+
+    <div class="hero-content-inner">
+      <h1>J. Chirinos</h1>
+      <div class="typewriter-text">
+        <span id="typewriter"></span><span class="cursor">&nbsp;</span>
       </div>
     </div>
-  </header>
 
-  <main>
-    <section id="impacto" aria-labelledby="t-impacto">
-      <div class="container">
-        <h2 id="t-impacto">Métricas de Impacto Global</h2>
-        <p class="lead">Resultados transversales de los proyectos en banca, seguros y consultoría.</p>
-        <div class="metrics">
-          <article class="metric">
-            <div class="value" data-metric="reclamaciones-rechazadas">−95%</div>
-            <h3>Reducción de errores</h3>
-            <p>Reclamaciones rechazadas en Banesco Banco Universal, mediante SSoT y modelos de datos.</p>
-          </article>
-          <article class="metric">
-            <div class="value blue text" data-metric="roi-operativo">ROI operativo</div>
-            <h3>Horas recuperadas</h3>
-            <p>Reportes manuales reemplazados por actualización automática de tableros y cotizaciones.</p>
-          </article>
-          <article class="metric">
-            <div class="value text" data-metric="automatizacion">4 frentes</div>
-            <h3>Automatización de procesos</h3>
-            <p>Referimientos, cotizaciones, ETL de siniestralidad y monitoreo de tasas con IA Generativa.</p>
-          </article>
-          <article class="metric">
-            <div class="value blue text" data-metric="ssot">1 fuente</div>
-            <h3>Única fuente de verdad</h3>
-            <p>Datos normalizados y tipados que eliminan discrepancias entre áreas.</p>
-          </article>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">+10 Años</div>
+        <div class="stat-label">Banca, Seguros & Analítica</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">-95%</div>
+        <div class="stat-label">Reducción de Fallas / Reclamaciones</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">+50%</div>
+        <div class="stat-label">Eficiencia en Tiempos de Respuesta</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Flujos Operativos Integrados</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTAFOLIO DE PROYECTOS (Mantiene funcionalidad, ajusta UX) -->
+  <div class="portfolio-card">
+    <div class="portfolio-header">
+      Casos de Éxito & Proyectos Destacados (GitHub SSoT)
+      <span>Filtra por área operativa ➔</span>
+    </div>
+
+    <!-- Radios invisibles para control de filtro (CSS Puro) -->
+    <input type="radio" id="filter-all" name="project-filter" class="filter-radios" checked>
+    <input type="radio" id="filter-bi" name="project-filter" class="filter-radios">
+    <input type="radio" id="filter-ai" name="project-filter" class="filter-radios">
+    <input type="radio" id="filter-auto" name="project-filter" class="filter-radios">
+
+    <div class="filter-labels">
+      <label for="filter-all" class="filter-label"><i class="fas fa-infinity"></i> Todos</label>
+      <label for="filter-bi" class="filter-label"><i class="fas fa-chart-bar"></i> BI & Dashboards</label>
+      <label for="filter-ai" class="filter-label"><i class="fas fa-robot"></i> IA & LLMs</label>
+      <label for="filter-auto" class="filter-label"><i class="fas fa-code"></i> Automatización & Python</label>
+    </div>
+
+    <div class="grid-projects">
+
+      <!-- Proyecto 1: Agente OCR -->
+      <div class="project-card cat-ai cat-auto">
+        <div>
+          <div class="project-company">Proyecto Repo 1 | GitHub: segubot-ocr-agent</div>
+          <div class="project-title">Procesamiento Inteligente de Recibos & OCR con Python</div>
+          <div class="project-desc">Automatización de lectura, extracción de datos y validación de recibos de pago mediante OCR con alta tolerancia al ruido y sincronización automática SSoT a Google Drive.</div>
+          <div class="project-stack"><strong>Stack:</strong> Python, Flask, Pytesseract, EasyOCR, Google APIs, Pandas</div>
+        </div>
+        <div>
+          <span class="metric-badge">⚡ Extracción Inteligente & Sincronización SSoT</span>
         </div>
       </div>
-    </section>
 
-    <section id="proyectos" aria-labelledby="t-proyectos">
-      <div class="container">
-        <h2 id="t-proyectos">Proyectos y Trayectoria</h2>
-        <p class="lead">Filtra por sector o por tipo de solución.</p>
-
-        <div class="filters" role="group" aria-label="Filtrar proyectos">
-          <button class="filter-btn" type="button" data-filter="all" aria-pressed="true">Todos</button>
-          <button class="filter-btn" type="button" data-filter="seguros" aria-pressed="false">Seguros</button>
-          <button class="filter-btn" type="button" data-filter="banca" aria-pressed="false">Banca</button>
-          <button class="filter-btn" type="button" data-filter="freelance" aria-pressed="false">Freelance</button>
-          <button class="filter-btn" type="button" data-filter="bi" aria-pressed="false">BI / Tableros</button>
-          <button class="filter-btn" type="button" data-filter="automatizacion" aria-pressed="false">Automatización</button>
-          <button class="filter-btn" type="button" data-filter="ia" aria-pressed="false">IA Generativa</button>
+      <!-- Proyecto 2: Motor V15 -->
+      <div class="project-card cat-bi cat-auto">
+        <div>
+          <div class="project-company">Proyecto Repo 2 | GitHub: v15-sports-predictor</div>
+          <div class="project-title">Motor de Predicción y Análisis Cuantitativo (V15)</div>
+          <div class="project-desc">Laboratorio de pruebas y backtesting desarrollado en Python y Streamlit que procesa conjuntos de datos complejos, ejecuta simulaciones probabilísticas y genera tableros predictivos.</div>
+          <div class="project-stack"><strong>Stack:</strong> Python, Streamlit, Pandas, NumPy, Modelos Estadísticos</div>
         </div>
-
-        <div class="projects" id="projects" aria-live="polite">
-          <article class="project-card" data-category="seguros bi automatizacion">
-            <span class="org">Seguros · Panamá</span>
-            <h3>Banesco Seguros Panamá</h3>
-            <p>Tableros de gestión comercial y automatización del flujo de referimientos.</p>
-            <ul>
-              <li>Tableros de Gestión Comercial para seguimiento de la fuerza de ventas.</li>
-              <li>Automatización de Referimientos de punta a punta.</li>
-            </ul>
-            <div class="tags"><span class="tag">BI</span><span class="tag">Automatización</span><span class="tag">Seguros</span></div>
-          </article>
-
-          <article class="project-card" data-category="seguros bi automatizacion">
-            <span class="org">Seguros · Venezuela</span>
-            <h3>Mercantil Seguros</h3>
-            <p>Tablero comercial de cotizaciones con actualización automática de datos.</p>
-            <ul>
-              <li>Tablero Comercial de Cotizaciones.</li>
-              <li>Actualización automática, sin intervención manual.</li>
-            </ul>
-            <div class="tags"><span class="tag">BI</span><span class="tag">Actualización automática</span><span class="tag">Seguros</span></div>
-          </article>
-
-          <article class="project-card" data-category="banca automatizacion">
-            <span class="org">Banca · Venezuela</span>
-            <h3>Banesco Banco Universal</h3>
-            <p><span class="highlight">−95% en reclamaciones rechazadas</span> mediante SSoT y modelos de datos.</p>
-            <ul>
-              <li>Diseño de una Única Fuente de Verdad (SSoT).</li>
-              <li>Modelos de datos que eliminan el origen del rechazo.</li>
-            </ul>
-            <div class="tags"><span class="tag">SSoT</span><span class="tag">Modelado de datos</span><span class="tag">Banca</span></div>
-          </article>
-
-          <article class="project-card" data-category="freelance automatizacion ia bi">
-            <span class="org">Consultoría Freelance</span>
-            <h3>Datos, ETL e IA para clientes</h3>
-            <p>Soluciones a medida para analítica y automatización.</p>
-            <ul>
-              <li>ETL de siniestralidad en Python/Excel.</li>
-              <li>Segmentación a demanda.</li>
-              <li>Monitoreo de tasas con IA Generativa.</li>
-            </ul>
-            <div class="tags"><span class="tag">Python</span><span class="tag">Excel</span><span class="tag">ETL</span><span class="tag">IA Generativa</span></div>
-          </article>
-        </div>
-        <p class="empty" id="empty" hidden>No hay proyectos para este filtro.</p>
-      </div>
-    </section>
-
-    <section id="ecosistema" aria-labelledby="t-eco">
-      <div class="container">
-        <h2 id="t-eco">Ecosistema de Repositorios</h2>
-        <p class="lead">Repositorios open source que complementan este portafolio.</p>
-        <div class="grid-3">
-          <div class="box">
-            <h3>segubot-ocr-agent</h3>
-            <p>Pipeline OCR de comprobantes de pago: extracción, validación por Regex y registro en Google Sheets como SSoT.</p>
-          </div>
-          <div class="box">
-            <h3>v15-sports-predictor</h3>
-            <p>Ingesta de datos, motor estocástico y panel en Streamlit.</p>
-            <span class="soon">En construcción</span>
-          </div>
-          <div class="box">
-            <h3>ssot-data-normalizer</h3>
-            <p>Scripts modulares de limpieza con tipado estricto y pruebas en pytest.</p>
-            <span class="soon">En construcción</span>
-          </div>
+        <div>
+          <span class="metric-badge">📈 Simulaciones Estocásticas & Dashboard</span>
         </div>
       </div>
-    </section>
-  </main>
 
-  <footer>
-    <div class="container">© <span id="year">2026</span> JW-Solutions · Portfolio Master Hub</div>
-  </footer>
+      <!-- Proyecto 3: SSoT Normalizer -->
+      <div class="project-card cat-auto">
+        <div>
+          <div class="project-company">Proyecto Repo 3 | GitHub: ssot-data-normalizer</div>
+          <div class="project-title">Pipeline SSoT de Depuración y Normalización de Datos</div>
+          <div class="project-desc">Script modular enfocado en la aplicación estricta de reglas de tipado y normalización de valores previos al modelado en Power BI, garantizando una Single Source of Truth corporativa.</div>
+          <div class="project-stack"><strong>Stack:</strong> Python, Pandas, Pytest, Power Query Integration</div>
+        </div>
+        <div>
+          <span class="metric-badge">⚙️ Estandarización de Fuentes Heterogéneas</span>
+        </div>
+      </div>
 
-  <script>
-    (function () {
-      "use strict";
-      var buttons = Array.prototype.slice.call(document.querySelectorAll(".filter-btn"));
-      var cards = Array.prototype.slice.call(document.querySelectorAll(".project-card"));
-      var empty = document.getElementById("empty");
+      <!-- Proyecto Corporativo: Banesco Banco Universal -->
+      <div class="project-card cat-bi">
+        <div>
+          <div class="project-company">Banesco Banco Universal | Analista BI Senior</div>
+          <div class="project-title">Reducción de Fallas en Gestión de Pólizas (-95%)</div>
+          <div class="project-desc">Análisis de causas raíz de rechazos mediante el modelado dimensional interdepartamental y la implementación de indicadores de seguimiento ejecutivo en Power BI.</div>
+          <div class="project-stack"><strong>Stack:</strong> Power BI, DAX, SQL Server, Excel Avanzado</div>
+        </div>
+        <div>
+          <span class="metric-badge">📉 -95% Reclamaciones Rechazadas</span>
+        </div>
+      </div>
 
-      function applyFilter(filter) {
-        var visible = 0;
-        cards.forEach(function (card) {
-          var cats = (card.getAttribute("data-category") || "").split(" ");
-          var show = filter === "all" || cats.indexOf(filter) !== -1;
-          card.hidden = !show;
-          if (show) { visible += 1; }
-        });
-        empty.hidden = visible !== 0;
-        buttons.forEach(function (b) {
-          b.setAttribute("aria-pressed", String(b.getAttribute("data-filter") === filter));
-        });
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Mantiene el efecto typewriter original
+  const words = [
+    "Data Analyst & Business Intelligence Senior",
+    "AI Solutions & Prompt Engineering Specialist",
+    "Automatización de Procesos con Python & LLMs",
+    "Optimización Financiera & Arquitectura SSoT"
+  ];
+  let i = 0;
+  let timer;
+
+  function typingEffect() {
+    let word = words[i].split("");
+    var loopTyping = function() {
+      if (word.length > 0) {
+        document.getElementById('typewriter').innerHTML += word.shift();
+      } else {
+        setTimeout(deletingEffect, 2500);
+        return false;
       }
+      timer = setTimeout(loopTyping, 45);
+    };
+    loopTyping();
+  }
 
-      buttons.forEach(function (b) {
-        b.addEventListener("click", function () { applyFilter(b.getAttribute("data-filter") || "all"); });
-      });
-      document.getElementById("year").textContent = String(new Date().getFullYear());
-    })();
-  </script>
+  function deletingEffect() {
+    let word = words[i].split("");
+    var loopDeleting = function() {
+      if (word.length > 0) {
+        word.pop();
+        document.getElementById('typewriter').innerHTML = word.join("");
+      } else {
+        if (words.length > (i + 1)) {
+          i++;
+        } else {
+          i = 0;
+        }
+        setTimeout(typingEffect, 500);
+        return false;
+      }
+      timer = setTimeout(loopDeleting, 25);
+    };
+    loopDeleting();
+  }
+
+  typingEffect();
+</script>
+
 </body>
 </html>
