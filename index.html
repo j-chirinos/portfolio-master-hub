@@ -171,12 +171,79 @@
     .btn.primary { box-shadow: 0 0 16px var(--primary-glow); }
     .btn.primary:hover { background: #66ffff; }
     .btn.ghost:hover { background: rgba(0, 255, 255, 0.1); }
+
+    /* ===== Refinamiento v2: red neuronal / placa base (solo CSS, aditivo) ===== */
+    html, body { background-color: #000000; }
+
+    /* Hero: profundidad de procesador, trazas + nodos, bordes y halo envolvente */
+    .hero {
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 0%, rgba(0, 255, 255, 0.14), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 100% 100%, rgba(0, 200, 255, 0.08), transparent 70%),
+        linear-gradient(160deg, #000000 0%, #050912 45%, #000000 100%);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(0, 255, 255, 0.15),
+        0 0 80px rgba(0, 255, 255, 0.07),
+        inset 0 0 40px rgba(0, 255, 255, 0.06);
+    }
+    .hero::before { opacity: .08; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 85%);
+      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 85%);
+    }
+
+    /* Tarjetas como nodos de red neuronal */
+    .metric, .project-card, .box {
+      border: 1px solid rgba(0, 255, 255, 0.12);
+      box-shadow: 0 4px 15px rgba(0, 255, 255, 0.08), inset 0 0 18px rgba(0, 255, 255, 0.025);
+    }
+    .metric:hover, .project-card:hover, .box:hover {
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow:
+        0 0 22px rgba(0, 255, 255, 0.35),
+        0 8px 30px rgba(0, 255, 255, 0.18),
+        inset 0 0 22px rgba(0, 255, 255, 0.07);
+    }
+
+    /* Tipografía y destellos */
+    h1, h2, .project-card h3, .box h3, .metric h3 { text-shadow: 0 0 12px rgba(0, 255, 255, 0.4); }
+    .metric .value, .metric .value.blue { text-shadow: 0 0 12px rgba(0, 255, 255, 0.4), 0 0 28px rgba(0, 255, 255, 0.2); }
+    /* Verde corporativo reservado a la métrica clave de éxito */
+    .metric .value[data-metric="reclamaciones-rechazadas"] { color: var(--green); text-shadow: 0 0 12px rgba(74, 222, 128, 0.45), 0 0 28px rgba(74, 222, 128, 0.2); }
+    h1 .grad { text-shadow: none; filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.4)); }
+    .brand span, .org { text-shadow: 0 0 10px rgba(0, 255, 255, 0.35); }
+
+    /* Badge y tags unificados en gama cian/aqua */
+    .badge { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(0, 255, 255, 0.06); box-shadow: 0 0 14px rgba(0, 255, 255, 0.25); text-shadow: 0 0 8px rgba(0, 255, 255, 0.5); }
+    .tag { background: rgba(0, 255, 255, 0.1); color: #7ffcff; border: 1px solid rgba(0, 255, 255, 0.28); }
+    .soon { border-color: rgba(0, 255, 255, 0.5); color: #7ffcff; }
+    .project-card li::marker { color: var(--accent-blue); }
+    /* .highlight (−95%) conserva el verde de éxito */
+    nav ul a:hover { color: var(--accent-blue); text-shadow: 0 0 8px rgba(0, 255, 255, 0.5); }
+    a:focus-visible, button:focus-visible { outline-color: var(--accent-blue); }
+    h2::after { background: linear-gradient(90deg, var(--accent-blue), rgba(0, 255, 255, 0)); box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+    footer { border-top-color: rgba(0, 255, 255, 0.2); }
+
+    @media (max-width: 640px) {
+      .hero::after { background-size: 32px 32px; }
+      .hero { margin-top: 12px; border-radius: 14px; }
+    }
   </style>
 </head>
 <body>
   <nav aria-label="Principal">
     <div class="container">
-      <div class="brand">JW<span>-Solutions</span></div>
+      <div class="brand">J.<span> Chirinos</span></div>
       <ul>
         <li><a href="#impacto">Impacto</a></li>
         <li><a href="#proyectos">Proyectos</a></li>
@@ -317,7 +384,7 @@
   </main>
 
   <footer>
-    <div class="container">© <span id="year">2026</span> JW-Solutions · Portfolio Master Hub</div>
+    <div class="container">© <span id="year">2026</span> J. Chirinos · Portfolio Master Hub</div>
   </footer>
 
   <script>
