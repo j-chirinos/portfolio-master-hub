@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; frame-src https://app.powerbi.com; base-uri 'none'; form-action 'none'">
   <meta name="description" content="Portafolio de Senior Data Analyst & Process Automation Lead: BI, SSoT, ETL y automatización en banca y seguros.">
   <title>Portfolio Master Hub | Data Analyst &amp; Automation Lead</title>
   <style>
@@ -234,9 +234,128 @@
     h2::after { background: linear-gradient(90deg, var(--accent-blue), rgba(0, 255, 255, 0)); box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
     footer { border-top-color: rgba(0, 255, 255, 0.2); }
 
+    /* ===== Power BI: dashboards interactivos ===== */
+    .pbi-card { width: 100%; background: var(--card-dark); border: 1px solid var(--border-subtle); border-radius: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); overflow: hidden; margin-top: 30px; }
+    .pbi-header { background: #020617; padding: 18px 24px; border-bottom: 1px solid rgba(56,189,248,0.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .pbi-title h2 { font-size: 1.25rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px; margin-bottom: 0; }
+    .pbi-title h2::after { display: none; }
+    .pbi-title p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+    .tab-buttons { display: flex; background: #1e293b; padding: 4px; border-radius: 10px; gap: 4px; border: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; }
+    .tab-btn { background: transparent; border: none; color: var(--text-muted); padding: 8px 16px; font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-family: inherit; }
+    .tab-btn:hover { color: #f8fafc; }
+    .tab-btn.active { background: #0284c7; color: #ffffff; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
+    .pbi-content { display: none; padding: 24px; }
+    .pbi-content.active { display: block; }
+    .pbi-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    .pbi-badge { background: rgba(56, 189, 248, 0.1); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .btn-pbi-link { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: var(--accent-blue) !important; text-decoration: none; font-size: 0.8rem; font-weight: 600; padding: 6px 14px; border-radius: 6px; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-pbi-link:hover { background: rgba(56, 189, 248, 0.15); border-color: var(--accent-blue); }
+    .iframe-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 10px; border: 1px solid #334155; background: #020617; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+    .iframe-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .pbi-desc-box { margin-top: 15px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 14px 18px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+    .pbi-desc-box strong { color: #f8fafc; }
+
     @media (max-width: 640px) {
+      .pbi-header, .pbi-content { padding: 16px; }
+      .tab-btn { flex: 1 1 100%; }
       .hero::after { background-size: 32px 32px; }
       .hero { margin-top: 12px; border-radius: 14px; }
+    }
+    /* =====================================================
+       Integración completa v3: hero, stats, skills drawer, footer
+       (bloque aditivo; no modifica reglas anteriores)
+       ===================================================== */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 4px; }
+    .badge.spec { border-color: rgba(0, 255, 255, 0.35); color: #7ffcff; background: rgba(0, 255, 255, 0.06); text-transform: none; letter-spacing: .03em; font-size: .84rem; box-shadow: 0 0 12px rgba(0, 255, 255, 0.12); }
+
+    .typewriter-text { max-width: 780px; min-height: 2.4em; margin: 0 auto; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: clamp(1rem, 2.4vw, 1.22rem); line-height: 1.5; }
+    .typewriter-text #typewriter { color: #e2e8f0; text-shadow: 0 0 10px rgba(0, 255, 255, 0.25); }
+    .typewriter-text .cursor { display: inline-block; width: .55ch; margin-left: 2px; background: var(--accent-blue); box-shadow: 0 0 8px var(--primary-glow); animation: cursor-blink 1s steps(1) infinite; vertical-align: text-bottom; }
+    @keyframes cursor-blink { 50% { opacity: 0; } }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; max-width: 920px; margin: 44px auto 0; }
+    .stat-item { background: var(--card); border: 1px solid rgba(0, 255, 255, 0.12); border-radius: var(--radius); padding: 20px 14px; transition: border-color .18s, box-shadow .18s, transform .18s; }
+    .stat-item:hover { transform: translateY(-3px); border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 0 18px rgba(0, 255, 255, 0.25); }
+    .stat-number { font-size: 2.1rem; font-weight: 800; line-height: 1.1; color: var(--accent-blue); text-shadow: 0 0 12px var(--primary-glow); }
+    .stat-number.success { color: var(--green); text-shadow: 0 0 12px rgba(74, 222, 128, 0.4); }
+    .stat-label { margin-top: 6px; color: var(--muted); font-size: .86rem; }
+
+    /* Tarjetas de proyecto: refuerzos de la integración */
+    .project-card .org.alt { color: #7ffcff; }
+
+    /* Skills drawer */
+    .floating-skills-btn { position: fixed; bottom: 20px; left: 20px; z-index: 99; padding: 11px 20px; font: inherit; font-weight: 600; font-size: .92rem; color: var(--accent-blue); background: rgba(0, 0, 0, 0.88); border: 1px solid rgba(0, 255, 255, 0.5); border-radius: 999px; cursor: pointer; box-shadow: 0 0 16px rgba(0, 255, 255, 0.25); backdrop-filter: blur(6px); transition: box-shadow .18s, background .18s, transform .18s; }
+    .floating-skills-btn:hover { background: rgba(0, 255, 255, 0.1); box-shadow: 0 0 24px rgba(0, 255, 255, 0.5); transform: translateY(-2px); }
+
+    .skills-modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); opacity: 0; visibility: hidden; transition: opacity .2s, visibility .2s; }
+    .skills-modal.open { opacity: 1; visibility: visible; }
+    .skills-dialog { position: relative; width: min(680px, 100%); max-height: 88vh; overflow-y: auto; background: rgba(6, 10, 18, 0.97); border: 1px solid rgba(0, 255, 255, 0.35); border-radius: 16px; padding: 28px; box-shadow: 0 0 40px rgba(0, 255, 255, 0.2); transform: translateY(12px) scale(.98); transition: transform .2s; }
+    .skills-modal.open .skills-dialog { transform: none; }
+    .skills-dialog h2 { font-size: 1.35rem; margin-bottom: 16px; padding-right: 40px; }
+    .skills-dialog h2::after { display: none; }
+    .skills-close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; font: inherit; font-size: 1.1rem; color: var(--muted); background: transparent; border: 1px solid rgba(0, 255, 255, 0.25); border-radius: 50%; cursor: pointer; transition: all .15s; }
+    .skills-close:hover { color: var(--accent-blue); border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(0, 255, 255, 0.35); }
+    .skills-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .skills-tab { flex: 1 1 auto; padding: 9px 14px; font: inherit; font-size: .9rem; font-weight: 600; color: var(--muted); background: transparent; border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 10px; cursor: pointer; transition: all .15s; }
+    .skills-tab:hover { color: var(--text); border-color: var(--accent-blue); }
+    .skills-tab[aria-selected="true"] { color: #000; background: var(--accent-blue); border-color: var(--accent-blue); box-shadow: 0 0 14px rgba(0, 255, 255, 0.4); }
+    .skills-panel[hidden] { display: none; }
+    .skills-panel p { color: var(--muted); font-size: .95rem; margin-bottom: 14px; }
+    .skill-chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; }
+    .skill-chips li { font-size: .82rem; padding: 4px 12px; border-radius: 999px; color: #7ffcff; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.28); }
+
+    /* Footer card */
+    footer { padding: 48px 0 32px; }
+    .footer-card { max-width: 860px; margin: 0 auto; padding: 32px 24px; background: var(--card); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 24px rgba(0, 255, 255, 0.08); }
+    .footer-card h2 { font-size: 1.15rem; line-height: 1.4; color: var(--text); margin-bottom: 20px; }
+    .footer-card h2::after { margin-inline: auto; }
+    .footer-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .footer-actions .btn { display: inline-block; font-size: .92rem; padding: 11px 22px; }
+    .footer-actions .btn.primary:hover { background: #7ffcff; box-shadow: 0 0 18px rgba(0, 255, 255, 0.5); }
+    .footer-actions .btn.ghost { color: var(--accent-blue); }
+    .footer-actions .btn.ghost:hover { background: rgba(0, 255, 255, 0.1); box-shadow: 0 0 14px rgba(0, 255, 255, 0.3); }
+    .sub-footer { margin-top: 24px; font-size: .82rem; color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .typewriter-text .cursor { animation: none; }
+      .skills-modal, .skills-dialog { transition: none; }
+    }
+    @media (max-width: 640px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); margin-top: 32px; }
+      .stat-number { font-size: 1.7rem; }
+      .floating-skills-btn { bottom: 14px; left: 14px; padding: 10px 16px; font-size: .85rem; }
+      .skills-dialog { padding: 22px 18px; }
+      .skills-tab { flex: 1 1 100%; }
+      .footer-card { padding: 26px 16px; }
+      .footer-actions .btn { flex: 1 1 100%; text-align: center; }
+    }
+
+    /* =====================================================
+       Refinamiento v4: jerarquía del hero, footer y casos del modal
+       (bloque aditivo)
+       ===================================================== */
+    .hero { padding: 80px 0 64px; }
+    .hero > .container { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+    .hero h1 { margin: 0; }
+    .hero .hero-badges { margin: 0; gap: 12px; }
+    .hero .typewriter-text { margin: 0 auto; min-height: 2.4em; }
+    .hero .cta { margin: 0; }
+    .hero .stats-grid { width: 100%; margin: 8px auto 0; }
+
+    .footer-card h2 { margin-bottom: 22px; }
+    .footer-card .sub-footer { margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(0, 255, 255, 0.12); }
+
+    .skill-example { margin-top: 18px; padding: 16px 18px; background: rgba(0, 255, 255, 0.04); border: 1px solid rgba(0, 255, 255, 0.22); border-left: 3px solid var(--accent-blue); border-radius: 10px; }
+    .skill-example-tag { display: inline-block; margin-bottom: 8px; padding: 2px 10px; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #7ffcff; background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.28); border-radius: 999px; }
+    .skills-panel .skill-example p { margin: 0; color: var(--text); font-size: .93rem; line-height: 1.6; }
+
+    @media (max-width: 640px) {
+      .hero { padding: 56px 0 48px; }
+      .hero > .container { gap: 20px; }
+      .hero .stats-grid { margin-top: 4px; }
+      .skill-example { padding: 14px; }
     }
   </style>
 </head>
@@ -256,10 +375,21 @@
     <div class="container">
       <span class="badge">Portfolio Master Hub</span>
       <h1>Senior Data Analyst &amp; <span class="grad">Process Automation Lead</span></h1>
-      <p>Convierto operaciones manuales en sistemas medibles: modelos de datos con fuente única de verdad (SSoT), tableros de gestión y pipelines automatizados para banca y seguros.</p>
+      <div class="hero-badges">
+        <span class="badge spec">Analytics &amp; BI Senior</span>
+        <span class="badge spec">⚡ AI &amp; Prompt Engineering</span>
+        <span class="badge spec">Banca &amp; Seguros</span>
+      </div>
+      <div class="typewriter-text"><span class="sr-only">Data Analyst &amp; Business Intelligence Specialist. AI Solutions &amp; Prompt Engineering Lead. Automatización de Procesos con Python &amp; LLMs. Optimización Financiera &amp; Arquitectura de Datos (SSoT).</span><span aria-hidden="true"><span id="typewriter">Data Analyst &amp; Business Intelligence Specialist</span><span class="cursor">&nbsp;</span></span></div>
       <div class="cta">
         <a class="btn primary" href="#proyectos">Ver proyectos</a>
         <a class="btn ghost" href="#impacto">Métricas de impacto</a>
+      </div>
+      <div class="stats-grid" aria-label="Métricas clave">
+        <div class="stat-item"><div class="stat-number">+10 Años</div><div class="stat-label">Banca, Seguros &amp; Analítica</div></div>
+        <div class="stat-item"><div class="stat-number success">-95%</div><div class="stat-label">Reducción de Fallas</div></div>
+        <div class="stat-item"><div class="stat-number">+50%</div><div class="stat-label">Eficiencia en Tiempos</div></div>
+        <div class="stat-item"><div class="stat-number">100%</div><div class="stat-label">Flujos Operativos Integrados</div></div>
       </div>
     </div>
   </header>
@@ -310,21 +440,65 @@
         </div>
 
         <div class="projects" id="projects" aria-live="polite">
-          <article class="project-card" data-category="seguros bi automatizacion">
-            <span class="org">Seguros · Panamá</span>
-            <h3>Banesco Seguros Panamá</h3>
-            <p>Tableros de gestión comercial y automatización del flujo de referimientos.</p>
+          <article class="project-card" data-category="freelance bi automatizacion">
+            <span class="org alt">Consultoría Freelance</span>
+            <h3>Dashboard de Siniestralidad</h3>
+            <p>Tablero de siniestralidad en Excel alimentado por un pipeline ETL en Python.</p>
             <ul>
-              <li>Tableros de Gestión Comercial para seguimiento de la fuerza de ventas.</li>
-              <li>Automatización de Referimientos de punta a punta.</li>
+              <li>ETL en Python que normaliza y carga los datos de siniestralidad.</li>
+              <li>Tablero en Excel listo para análisis y toma de decisiones.</li>
             </ul>
-            <div class="tags"><span class="tag">BI</span><span class="tag">Automatización</span><span class="tag">Seguros</span></div>
+            <div class="tags"><span class="tag">Excel</span><span class="tag">Python</span><span class="tag">ETL</span></div>
+          </article>
+
+          <article class="project-card" data-category="freelance automatizacion">
+            <span class="org alt">Consultoría Freelance</span>
+            <h3>Segmentación y Reportes a Demanda</h3>
+            <p>Segmentación de datos y generación de reportes bajo demanda del cliente.</p>
+            <ul>
+              <li>Segmentación configurable de la información.</li>
+              <li>Reportes generados a demanda, sin trabajo manual repetitivo.</li>
+            </ul>
+            <div class="tags"><span class="tag">Python</span><span class="tag">Reportería</span><span class="tag">Automatización</span></div>
+          </article>
+
+          <article class="project-card" data-category="freelance automatizacion ia">
+            <span class="org alt">Consultoría Freelance</span>
+            <h3>Monitoreo de Tasas de Cambio con IA</h3>
+            <p>Monitoreo de tasas de cambio con IA Generativa y Google Apps Script.</p>
+            <ul>
+              <li>Captura y seguimiento automatizado de tasas de cambio.</li>
+              <li>IA Generativa integrada al flujo de monitoreo.</li>
+            </ul>
+            <div class="tags"><span class="tag">IA Generativa</span><span class="tag">Google Apps Script</span><span class="tag">Automatización</span></div>
+          </article>
+
+          <article class="project-card" data-category="seguros bi">
+            <span class="org">Seguros · Panamá</span>
+            <h3>Banesco Seguros Panamá: Gestión Comercial</h3>
+            <p>Tableros de gestión comercial y KPIs de metas.</p>
+            <ul>
+              <li>Tableros de Gestión Comercial para la fuerza de ventas.</li>
+              <li>Seguimiento de KPIs frente a metas.</li>
+            </ul>
+            <div class="tags"><span class="tag">BI</span><span class="tag">KPIs</span><span class="tag">Seguros</span></div>
+          </article>
+
+          <article class="project-card" data-category="seguros automatizacion">
+            <span class="org">Seguros · Panamá</span>
+            <h3>Banesco Seguros Panamá: Referimientos</h3>
+            <p>Automatización de referimientos de la Banca.</p>
+            <ul>
+              <li>Flujo de referimientos automatizado de punta a punta.</li>
+              <li>Menos intervención manual entre Banca y Seguros.</li>
+            </ul>
+            <div class="tags"><span class="tag">Automatización</span><span class="tag">Procesos</span><span class="tag">Seguros</span></div>
           </article>
 
           <article class="project-card" data-category="seguros bi automatizacion">
             <span class="org">Seguros · Venezuela</span>
             <h3>Mercantil Seguros</h3>
-            <p>Tablero comercial de cotizaciones con actualización automática de datos.</p>
+            <p>Tablero comercial y seguimiento de cotizaciones con actualización automática de datos.</p>
             <ul>
               <li>Tablero Comercial de Cotizaciones.</li>
               <li>Actualización automática, sin intervención manual.</li>
@@ -343,19 +517,77 @@
             <div class="tags"><span class="tag">SSoT</span><span class="tag">Modelado de datos</span><span class="tag">Banca</span></div>
           </article>
 
-          <article class="project-card" data-category="freelance automatizacion ia bi">
-            <span class="org">Consultoría Freelance</span>
-            <h3>Datos, ETL e IA para clientes</h3>
-            <p>Soluciones a medida para analítica y automatización.</p>
+          <article class="project-card" data-category="ia automatizacion">
+            <span class="org alt">Innovación IA</span>
+            <h3>Análisis Automatizado de Pólizas Extensas</h3>
+            <p>LLMs y Prompt Engineering para analizar pólizas de gran extensión.</p>
             <ul>
-              <li>ETL de siniestralidad en Python/Excel.</li>
-              <li>Segmentación a demanda.</li>
-              <li>Monitoreo de tasas con IA Generativa.</li>
+              <li>Extracción y análisis de cláusulas con LLMs.</li>
+              <li>Prompts diseñados para resultados consistentes y verificables.</li>
             </ul>
-            <div class="tags"><span class="tag">Python</span><span class="tag">Excel</span><span class="tag">ETL</span><span class="tag">IA Generativa</span></div>
+            <div class="tags"><span class="tag">LLMs</span><span class="tag">Prompt Engineering</span><span class="tag">Seguros</span></div>
           </article>
         </div>
         <p class="empty" id="empty" hidden>No hay proyectos para este filtro.</p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN DE DASHBOARDS INTERACTIVOS POWER BI -->
+    <section id="powerbi" aria-labelledby="t-powerbi">
+      <div class="container">
+        <div class="pbi-card">
+          <div class="pbi-header">
+            <div class="pbi-title">
+              <h2 id="t-powerbi">📊 Dashboards Interactivos Power BI</h2>
+              <p>Selecciona un tablero para interactuar en tiempo real</p>
+            </div>
+
+            <div class="tab-buttons">
+              <button class="tab-btn active" type="button" onclick="switchPbiTab(event, 'pbi-dash1')">Dashboard 1: Gestión Integral</button>
+              <button class="tab-btn" type="button" onclick="switchPbiTab(event, 'pbi-dash2')">Dashboard 2: Seguimiento Diario</button>
+            </div>
+          </div>
+
+          <!-- DASHBOARD 1 -->
+          <div id="pbi-dash1" class="pbi-content active">
+            <div class="pbi-meta">
+              <span class="pbi-badge">⚡ Modelo Multipágina / Analítica Ejecutiva</span>
+              <div class="pbi-actions">
+                <a href="https://app.powerbi.com/view?pageName=3a6e06f729adb14864bb&r=eyJrIjoiOTBlYmJkZWUtYjkwYi00MTEzLTg3MWEtMjhkMGI4NDc1YzZiIiwidCI6ImExOTZhYzUwLTcxMmEtNGYzZS04ZjI0LTcwMmRiMzc4ZTQ1MSIsImMiOjR9" target="_blank" rel="noopener noreferrer" class="btn-pbi-link">
+                  🔗 Abrir en Power BI Service ↗
+                </a>
+              </div>
+            </div>
+
+            <div class="iframe-container">
+              <iframe title="Dashboard 1 - Gestión Integral" src="https://app.powerbi.com/view?pageName=3a6e06f729adb14864bb&r=eyJrIjoiOTBlYmJkZWUtYjkwYi00MTEzLTg3MWEtMjhkMGI4NDc1YzZiIiwidCI6ImExOTZhYzUwLTcxMmEtNGYzZS04ZjI0LTcwMmRiMzc4ZTQ1MSIsImMiOjR9" allowfullscreen="true" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+
+            <div class="pbi-desc-box">
+              <strong>Descripción Técnica:</strong> Tablero analítico orientado al control gerencial y monitoreo de indicadores clave (KPIs). Integra segmentadores dinámicos, modelado multidimensional y análisis de tendencias operativas.
+            </div>
+          </div>
+
+          <!-- DASHBOARD 2 -->
+          <div id="pbi-dash2" class="pbi-content">
+            <div class="pbi-meta">
+              <span class="pbi-badge">🔥 Monitoreo Diario en Vivo / Página Única</span>
+              <div class="pbi-actions">
+                <a href="https://app.powerbi.com/view?r=eyJrIjoiM2I2ZWM0MzktMTQzMC00M2U4LTlmNjktNGIzNDZhYWU3NGIyIiwidCI6ImExOTZhYzUwLTcxMmEtNGYzZS04ZjI0LTcwMmRiMzc4ZTQ1MSIsImMiOjR9" target="_blank" rel="noopener noreferrer" class="btn-pbi-link">
+                  🔗 Abrir en Power BI Service ↗
+                </a>
+              </div>
+            </div>
+
+            <div class="iframe-container">
+              <iframe title="Dashboard 2 - Seguimiento Diario" src="https://app.powerbi.com/view?r=eyJrIjoiM2I2ZWM0MzktMTQzMC00M2U4LTlmNjktNGIzNDZhYWU3NGIyIiwidCI6ImExOTZhYzUwLTcxMmEtNGYzZS04ZjI0LTcwMmRiMzc4ZTQ1MSIsImMiOjR9" allowfullscreen="true" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+
+            <div class="pbi-desc-box">
+              <strong>Descripción Técnica:</strong> Tablero de página única diseñado para la toma de decisiones ágil y seguimiento diario en vivo. Optimizado para lectura ejecutiva rápida, KPIs operativos y visualización densa sin fricción.
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -383,11 +615,66 @@
     </section>
   </main>
 
+  <button id="openSkillsBtn" class="floating-skills-btn" type="button" aria-haspopup="dialog" aria-controls="skillsModal">🎯 Competencias &amp; Stack</button>
+
+  <div id="skillsModal" class="skills-modal" aria-hidden="true">
+    <div class="skills-dialog" role="dialog" aria-modal="true" aria-labelledby="skillsTitle">
+      <button id="closeSkillsBtn" class="skills-close" type="button" aria-label="Cerrar">✕</button>
+      <h2 id="skillsTitle">🎯 Competencias &amp; Stack</h2>
+      <div class="skills-tabs" role="tablist" aria-label="Áreas de competencia">
+        <button class="skills-tab" type="button" role="tab" id="sk-tab-bi" aria-controls="sk-bi" aria-selected="true">BI &amp; Datos</button>
+        <button class="skills-tab" type="button" role="tab" id="sk-tab-ia" aria-controls="sk-ia" aria-selected="false" tabindex="-1">IA Aplicada</button>
+        <button class="skills-tab" type="button" role="tab" id="sk-tab-auto" aria-controls="sk-auto" aria-selected="false" tabindex="-1">Automatización</button>
+      </div>
+      <div class="skills-panel" id="sk-bi" role="tabpanel" aria-labelledby="sk-tab-bi">
+        <p>Tableros de gestión, modelos de datos con fuente única de verdad y analítica para banca y seguros.</p>
+        <ul class="skill-chips"><li>Power BI</li><li>Excel avanzado</li><li>Modelado de datos</li><li>SSoT</li><li>KPIs &amp; metas</li><li>ETL</li></ul>
+        <div class="skill-example">
+          <span class="skill-example-tag">Caso real · Banca &amp; Seguros</span>
+          <p>Modelado dimensional en Power BI y DAX avanzado para tableros gerenciales en Banesco y Mercantil, reduciendo los tiempos de reporte financiero de días a minutos y unificando criterios mediante SSoT.</p>
+        </div>
+      </div>
+      <div class="skills-panel" id="sk-ia" role="tabpanel" aria-labelledby="sk-tab-ia" hidden>
+        <p>IA Generativa aplicada a problemas reales de negocio, con prompts diseñados y verificados.</p>
+        <ul class="skill-chips"><li>Prompt Engineering</li><li>LLMs</li><li>IA Generativa</li><li>Análisis de documentos</li><li>OCR</li></ul>
+        <div class="skill-example">
+          <span class="skill-example-tag">Caso real · Seguros &amp; Tasas</span>
+          <p>Implementación de Prompt Engineering y LLMs para extracción automatizada de cláusulas en pólizas extensas y monitoreo inteligente de tasas con IA, logrando un 85% de ahorro en tiempo de lectura jurídica.</p>
+        </div>
+      </div>
+      <div class="skills-panel" id="sk-auto" role="tabpanel" aria-labelledby="sk-tab-auto" hidden>
+        <p>Procesos manuales convertidos en pipelines automáticos, medibles y probados.</p>
+        <ul class="skill-chips"><li>Python</li><li>Google Apps Script</li><li>Google Sheets</li><li>Regex</li><li>pytest</li><li>Streamlit</li></ul>
+        <div class="skill-example">
+          <span class="skill-example-tag">Caso real · Banca &amp; Siniestralidad</span>
+          <p>Desarrollo de pipelines ETL en Python y scripts de Google Apps Script para automatizar referimientos de la banca y depuración masiva de siniestralidad, eliminando errores operativos manuales en un 95%.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    <div class="container">© <span id="year">2026</span> J. Chirinos · Portfolio Master Hub</div>
+    <div class="container">
+      <div class="footer-card">
+        <h2>J. Chirinos | Data Analyst &amp; AI Solutions Specialist</h2>
+        <div class="footer-actions">
+          <a class="btn primary" href="https://drive.google.com/file/d/1C6TKaWsjZYNsxffX64WAJ1Ochlh9cTDJ/view?usp=drive_link" target="_blank" rel="noopener noreferrer">📄 Descargar CV (PDF)</a>
+          <a class="btn ghost" href="https://www.linkedin.com/in/j-chirinos-662955195" target="_blank" rel="noopener noreferrer">🔗 LinkedIn</a>
+          <a class="btn ghost" href="mailto:jchasesor@gmail.com">✉️ Contacto Directo</a>
+        </div>
+        <p class="sub-footer">© <span id="year">2026</span> J. Chirinos — Ecosistema de Analytics &amp; Soluciones con Inteligencia Artificial | Caracas, Venezuela</p>
+      </div>
+    </div>
   </footer>
 
   <script>
+    function switchPbiTab(event, tabId) {
+      var card = event.currentTarget.closest(".pbi-card");
+      card.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+      card.querySelectorAll(".pbi-content").forEach(function (c) { c.classList.remove("active"); });
+      event.currentTarget.classList.add("active");
+      document.getElementById(tabId).classList.add("active");
+    }
     (function () {
       "use strict";
       var buttons = Array.prototype.slice.call(document.querySelectorAll(".filter-btn"));
@@ -412,6 +699,81 @@
         b.addEventListener("click", function () { applyFilter(b.getAttribute("data-filter") || "all"); });
       });
       document.getElementById("year").textContent = String(new Date().getFullYear());
+    })();
+    (function () {
+      "use strict";
+      /* Typewriter */
+      var el = document.getElementById("typewriter");
+      var phrases = [
+        "Data Analyst & Business Intelligence Specialist",
+        "AI Solutions & Prompt Engineering Lead",
+        "Automatización de Procesos con Python & LLMs",
+        "Optimización Financiera & Arquitectura de Datos (SSoT)"
+      ];
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (el && !reduce) {
+        var p = 0, c = 0, deleting = false;
+        (function tick() {
+          var full = phrases[p], delay = deleting ? 25 : 55;
+          c += deleting ? -1 : 1;
+          el.textContent = full.slice(0, c);
+          if (!deleting && c === full.length) { deleting = true; delay = 1800; }
+          else if (deleting && c === 0) { deleting = false; p = (p + 1) % phrases.length; delay = 400; }
+          setTimeout(tick, delay);
+        })();
+      }
+
+      /* Skills drawer */
+      var modal = document.getElementById("skillsModal");
+      var openBtn = document.getElementById("openSkillsBtn");
+      var closeBtn = document.getElementById("closeSkillsBtn");
+      var tabs = Array.prototype.slice.call(document.querySelectorAll(".skills-tab"));
+      var lastFocus = null;
+
+      function selectTab(tab) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute("aria-selected", String(on));
+          t.tabIndex = on ? 0 : -1;
+          document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+        });
+      }
+      function openModal() {
+        lastFocus = document.activeElement;
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        closeBtn.focus();
+      }
+      function closeModal() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+      }
+      tabs.forEach(function (t, i) {
+        t.addEventListener("click", function () { selectTab(t); });
+        t.addEventListener("keydown", function (e) {
+          var n = null;
+          if (e.key === "ArrowRight") { n = tabs[(i + 1) % tabs.length]; }
+          else if (e.key === "ArrowLeft") { n = tabs[(i - 1 + tabs.length) % tabs.length]; }
+          if (n) { e.preventDefault(); selectTab(n); n.focus(); }
+        });
+      });
+      openBtn.addEventListener("click", openModal);
+      closeBtn.addEventListener("click", closeModal);
+      modal.addEventListener("click", function (e) { if (e.target === modal) { closeModal(); } });
+      document.addEventListener("keydown", function (e) {
+        if (!modal.classList.contains("open")) { return; }
+        if (e.key === "Escape") { closeModal(); return; }
+        if (e.key === "Tab") {
+          var f = Array.prototype.slice.call(modal.querySelectorAll("button:not([tabindex='-1'])"));
+          if (!f.length) { return; }
+          var first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
     })();
   </script>
 </body>
