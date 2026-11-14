@@ -394,6 +394,13 @@
       .hero-text .hero-badges, .hero-text .cta { justify-content: center; }
       .hero-text .typewriter-text { margin: 0 auto; }
     }
+
+    /* Selector de idioma ES/EN */
+    .lang-switch { display: inline-flex; border: 1px solid var(--border-subtle); border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+    .lang-btn { background: transparent; color: var(--muted); border: 0; padding: 5px 12px; font: inherit; font-size: .8rem; font-weight: 600; letter-spacing: .06em; cursor: pointer; transition: color .15s, background .15s; }
+    .lang-btn:hover { color: var(--accent-blue); }
+    .lang-btn[aria-pressed="true"] { background: var(--accent-blue); color: #000; }
+    .lang-btn:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: -2px; }
   </style>
 </head>
 <body>
@@ -405,6 +412,10 @@
         <li><a href="#proyectos">Proyectos</a></li>
         <li><a href="#ecosistema">Ecosistema</a></li>
       </ul>
+      <div class="lang-switch" role="group" aria-label="Idioma">
+        <button class="lang-btn" type="button" data-lang="es" lang="es" aria-pressed="true">ES</button>
+        <button class="lang-btn" type="button" data-lang="en" lang="en" aria-pressed="false">EN</button>
+      </div>
     </div>
   </nav>
 
@@ -720,6 +731,186 @@
   </footer>
 
   <script>
+    /* i18n ES/EN: el HTML queda en español (respaldo sin JS); el inglés se aplica sobre nodos de texto y atributos por coincidencia exacta. */
+    (function () {
+      "use strict";
+      var EN = {
+        "Principal": "Main",
+        "Idioma": "Language",
+        "Impacto": "Impact",
+        "Proyectos": "Projects",
+        "Ecosistema": "Ecosystem",
+        "👋 Hola, soy": "👋 Hi, I'm",
+        "Banca & Seguros": "Banking & Insurance",
+        "Data Analyst & Business Intelligence Specialist. AI Solutions & Prompt Engineering Lead. Automatización de Procesos con Python & LLMs. Optimización Financiera & Arquitectura de Datos (SSoT).": "Data Analyst & Business Intelligence Specialist. AI Solutions & Prompt Engineering Lead. Process Automation with Python & LLMs. Financial Optimization & Data Architecture (SSoT).",
+        "Ver proyectos": "View projects",
+        "Métricas de impacto": "Impact metrics",
+        "Foto de J. Chirinos, Data Analyst & AI Solutions Specialist": "Photo of J. Chirinos, Data Analyst & AI Solutions Specialist",
+        "Disponible para proyectos": "Available for projects",
+        "Métricas clave": "Key metrics",
+        "+10 Años": "+10 Years",
+        "Banca, Seguros & Analítica": "Banking, Insurance & Analytics",
+        "Reducción de Fallas": "Failure Reduction",
+        "Eficiencia en Tiempos": "Time Efficiency",
+        "Flujos Operativos Integrados": "Integrated Operational Flows",
+        "Métricas de Impacto Global": "Global Impact Metrics",
+        "Resultados transversales de los proyectos en banca, seguros y consultoría.": "Cross-cutting results from banking, insurance and consulting projects.",
+        "Reducción de errores": "Error reduction",
+        "Reclamaciones rechazadas en Banesco Banco Universal, mediante SSoT y modelos de datos.": "Rejected claims at Banesco Banco Universal, achieved through SSoT and data models.",
+        "ROI operativo": "Operational ROI",
+        "Horas recuperadas": "Hours recovered",
+        "Reportes manuales reemplazados por actualización automática de tableros y cotizaciones.": "Manual reports replaced by automatic refresh of dashboards and quotations.",
+        "4 frentes": "4 fronts",
+        "Automatización de procesos": "Process automation",
+        "Referimientos, cotizaciones, ETL de siniestralidad y monitoreo de tasas con IA Generativa.": "Referrals, quotations, claims-loss ETL and exchange-rate monitoring with Generative AI.",
+        "1 fuente": "1 source",
+        "Única fuente de verdad": "Single source of truth",
+        "Datos normalizados y tipados que eliminan discrepancias entre áreas.": "Normalized, typed data that eliminates discrepancies across departments.",
+        "Proyectos y Trayectoria": "Projects & Track Record",
+        "Filtra por sector o por tipo de solución.": "Filter by sector or solution type.",
+        "Filtrar proyectos": "Filter projects",
+        "Todos": "All",
+        "Seguros": "Insurance",
+        "Banca": "Banking",
+        "BI / Tableros": "BI / Dashboards",
+        "Automatización": "Automation",
+        "IA Generativa": "Generative AI",
+        "Consultoría Freelance": "Freelance Consulting",
+        "Dashboard de Siniestralidad": "Claims Loss Dashboard",
+        "Tablero de siniestralidad en Excel alimentado por un pipeline ETL en Python.": "Excel claims-loss dashboard fed by a Python ETL pipeline.",
+        "ETL en Python que normaliza y carga los datos de siniestralidad.": "Python ETL that normalizes and loads claims-loss data.",
+        "Tablero en Excel listo para análisis y toma de decisiones.": "Excel dashboard ready for analysis and decision-making.",
+        "Segmentación y Reportes a Demanda": "On-Demand Segmentation & Reporting",
+        "Segmentación de datos y generación de reportes bajo demanda del cliente.": "Data segmentation and report generation on client demand.",
+        "Segmentación configurable de la información.": "Configurable data segmentation.",
+        "Reportes generados a demanda, sin trabajo manual repetitivo.": "Reports generated on demand, with no repetitive manual work.",
+        "Reportería": "Reporting",
+        "Monitoreo de Tasas de Cambio con IA": "Exchange-Rate Monitoring with AI",
+        "Monitoreo de tasas de cambio con IA Generativa y Google Apps Script.": "Exchange-rate monitoring with Generative AI and Google Apps Script.",
+        "Captura y seguimiento automatizado de tasas de cambio.": "Automated capture and tracking of exchange rates.",
+        "IA Generativa integrada al flujo de monitoreo.": "Generative AI integrated into the monitoring flow.",
+        "Seguros · Panamá": "Insurance · Panama",
+        "Banesco Seguros Panamá: Gestión Comercial": "Banesco Seguros Panama: Sales Management",
+        "Tableros de gestión comercial y KPIs de metas.": "Sales management dashboards and goal KPIs.",
+        "Tableros de Gestión Comercial para la fuerza de ventas.": "Sales Management dashboards for the sales force.",
+        "Seguimiento de KPIs frente a metas.": "KPI tracking against targets.",
+        "Banesco Seguros Panamá: Referimientos": "Banesco Seguros Panama: Referrals",
+        "Automatización de referimientos de la Banca.": "Automation of Banking referrals.",
+        "Flujo de referimientos automatizado de punta a punta.": "End-to-end automated referral flow.",
+        "Menos intervención manual entre Banca y Seguros.": "Less manual intervention between Banking and Insurance.",
+        "Procesos": "Processes",
+        "Seguros · Venezuela": "Insurance · Venezuela",
+        "Tablero comercial y seguimiento de cotizaciones con actualización automática de datos.": "Sales dashboard and quotation tracking with automatic data refresh.",
+        "Tablero Comercial de Cotizaciones.": "Quotations Sales Dashboard.",
+        "Actualización automática, sin intervención manual.": "Automatic refresh with no manual intervention.",
+        "Actualización automática": "Auto-refresh",
+        "Banca · Venezuela": "Banking · Venezuela",
+        "−95% en reclamaciones rechazadas": "−95% in rejected claims",
+        "mediante SSoT y modelos de datos.": "through SSoT and data models.",
+        "Diseño de una Única Fuente de Verdad (SSoT).": "Design of a Single Source of Truth (SSoT).",
+        "Modelos de datos que eliminan el origen del rechazo.": "Data models that remove the root cause of rejections.",
+        "Modelado de datos": "Data modeling",
+        "Innovación IA": "AI Innovation",
+        "Análisis Automatizado de Pólizas Extensas": "Automated Analysis of Lengthy Policies",
+        "LLMs y Prompt Engineering para analizar pólizas de gran extensión.": "LLMs and Prompt Engineering to analyze very long insurance policies.",
+        "Extracción y análisis de cláusulas con LLMs.": "Clause extraction and analysis with LLMs.",
+        "Prompts diseñados para resultados consistentes y verificables.": "Prompts designed for consistent, verifiable results.",
+        "No hay proyectos para este filtro.": "No projects for this filter.",
+        "📊 Dashboards Interactivos Power BI": "📊 Interactive Power BI Dashboards",
+        "Selecciona un tablero para interactuar en tiempo real": "Select a dashboard to interact with in real time",
+        "Dashboard 1: Gestión Integral": "Dashboard 1: Integrated Management",
+        "Dashboard 2: Seguimiento Diario": "Dashboard 2: Daily Tracking",
+        "Dashboard 1 - Gestión Integral": "Dashboard 1 - Integrated Management",
+        "Dashboard 2 - Seguimiento Diario": "Dashboard 2 - Daily Tracking",
+        "⚡ Modelo Multipágina / Analítica Ejecutiva": "⚡ Multi-page Model / Executive Analytics",
+        "🔥 Monitoreo Diario en Vivo / Página Única": "🔥 Live Daily Monitoring / Single Page",
+        "🔗 Abrir en Power BI Service ↗": "🔗 Open in Power BI Service ↗",
+        "Descripción Técnica:": "Technical Description:",
+        "Tablero analítico orientado al control gerencial y monitoreo de indicadores clave (KPIs). Integra segmentadores dinámicos, modelado multidimensional y análisis de tendencias operativas.": "Analytical dashboard geared to management control and key-indicator (KPI) monitoring. Combines dynamic slicers, multidimensional modeling and operational trend analysis.",
+        "Tablero de página única diseñado para la toma de decisiones ágil y seguimiento diario en vivo. Optimizado para lectura ejecutiva rápida, KPIs operativos y visualización densa sin fricción.": "Single-page dashboard designed for agile decision-making and live daily tracking. Optimized for fast executive reading, operational KPIs and dense, frictionless visualization.",
+        "Ecosistema de Repositorios": "Repository Ecosystem",
+        "Repositorios open source que complementan este portafolio.": "Open-source repositories that complement this portfolio.",
+        "Pipeline OCR de comprobantes de pago: extracción, validación por Regex y registro en Google Sheets como SSoT.": "OCR pipeline for payment receipts: extraction, Regex validation and logging to Google Sheets as SSoT.",
+        "Ingesta de datos, motor estocástico (Poisson + Monte Carlo) y panel en Streamlit.": "Data ingestion, stochastic engine (Poisson + Monte Carlo) and Streamlit dashboard.",
+        "Pipeline modular de limpieza con tipado estricto y pruebas en pytest.": "Modular cleaning pipeline with strict typing and pytest tests.",
+        "Utilidades de formateo, validación e i18n (es/en) con micro-app web sin dependencias.": "Formatting, validation and i18n (es/en) utilities with a dependency-free web micro-app.",
+        "Ver en GitHub →": "View on GitHub →",
+        "🎯 Competencias & Stack": "🎯 Skills & Stack",
+        "Cerrar": "Close",
+        "Áreas de competencia": "Skill areas",
+        "BI & Datos": "BI & Data",
+        "IA Aplicada": "Applied AI",
+        "Tableros de gestión, modelos de datos con fuente única de verdad y analítica para banca y seguros.": "Management dashboards, single-source-of-truth data models and analytics for banking and insurance.",
+        "Excel avanzado": "Advanced Excel",
+        "KPIs & metas": "KPIs & targets",
+        "Caso real · Banca & Seguros": "Real case · Banking & Insurance",
+        "Modelado dimensional en Power BI y DAX avanzado para tableros gerenciales en Banesco y Mercantil, reduciendo los tiempos de reporte financiero de días a minutos y unificando criterios mediante SSoT.": "Dimensional modeling in Power BI and advanced DAX for executive dashboards at Banesco and Mercantil, cutting financial reporting time from days to minutes and unifying criteria through SSoT.",
+        "IA Generativa aplicada a problemas reales de negocio, con prompts diseñados y verificados.": "Generative AI applied to real business problems, with designed and verified prompts.",
+        "Análisis de documentos": "Document analysis",
+        "Caso real · Seguros & Tasas": "Real case · Insurance & Rates",
+        "Implementación de Prompt Engineering y LLMs para extracción automatizada de cláusulas en pólizas extensas y monitoreo inteligente de tasas con IA, logrando un 85% de ahorro en tiempo de lectura jurídica.": "Prompt Engineering and LLMs for automated clause extraction from lengthy policies and intelligent exchange-rate monitoring with AI, achieving 85% savings in legal reading time.",
+        "Procesos manuales convertidos en pipelines automáticos, medibles y probados.": "Manual processes turned into automated, measurable and tested pipelines.",
+        "Caso real · Banca & Siniestralidad": "Real case · Banking & Claims",
+        "Desarrollo de pipelines ETL en Python y scripts de Google Apps Script para automatizar referimientos de la banca y depuración masiva de siniestralidad, eliminando errores operativos manuales en un 95%.": "Python ETL pipelines and Google Apps Script automations for banking referrals and bulk claims-data cleansing, eliminating manual operational errors by 95%.",
+        "📄 Descargar CV (PDF)": "📄 Download CV (PDF)",
+        "✉️ Contacto Directo": "✉️ Contact Me",
+        "J. Chirinos — Ecosistema de Analytics & Soluciones con Inteligencia Artificial | Caracas, Venezuela": "J. Chirinos — Analytics Ecosystem & Artificial Intelligence Solutions | Caracas, Venezuela"
+};
+      var META_ES = "Portafolio de Senior Data Analyst & Process Automation Lead: BI, SSoT, ETL y automatización en banca y seguros.", META_EN = "Portfolio of a Senior Data Analyst & Process Automation Lead: BI, SSoT, ETL and automation in banking and insurance.";
+      var items = [];
+      function norm(t) { return t.replace(/\s+/g, " ").trim(); }
+
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          var p = n.parentNode;
+          if (!p || p.nodeName === "SCRIPT" || p.nodeName === "STYLE" || p.id === "typewriter") { return NodeFilter.FILTER_REJECT; }
+          return norm(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+        }
+      });
+      var n;
+      while ((n = walker.nextNode())) {
+        var key = norm(n.nodeValue);
+        if (Object.prototype.hasOwnProperty.call(EN, key)) {
+          var v = n.nodeValue;
+          items.push({ el: n, attr: null, es: v, en: v.match(/^\s*/)[0] + EN[key] + v.match(/\s*$/)[0] });
+        }
+      }
+      Array.prototype.forEach.call(document.querySelectorAll("[aria-label],[alt],[title]"), function (el) {
+        ["aria-label", "alt", "title"].forEach(function (a) {
+          var v = el.getAttribute(a);
+          if (v !== null && Object.prototype.hasOwnProperty.call(EN, v)) { items.push({ el: el, attr: a, es: v, en: EN[v] }); }
+        });
+      });
+      var meta = document.querySelector('meta[name="description"]');
+      var langBtns = Array.prototype.slice.call(document.querySelectorAll(".lang-btn"));
+
+      function setLang(lang) {
+        var en = lang === "en";
+        items.forEach(function (it) {
+          var val = en ? it.en : it.es;
+          if (it.attr) { it.el.setAttribute(it.attr, val); } else { it.el.nodeValue = val; }
+        });
+        if (meta) { meta.setAttribute("content", en ? META_EN : META_ES); }
+        document.documentElement.lang = en ? "en" : "es";
+        langBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === (en ? "en" : "es"))); });
+        try { localStorage.setItem("portfolio-lang", en ? "en" : "es"); } catch (e) { /* almacenamiento no disponible */ }
+      }
+
+      langBtns.forEach(function (b) {
+        b.addEventListener("click", function () { setLang(b.getAttribute("data-lang")); });
+      });
+
+      var initial = null;
+      try {
+        var q = new URLSearchParams(location.search).get("lang");
+        if (q === "es" || q === "en") { initial = q; }
+        else { var st = localStorage.getItem("portfolio-lang"); if (st === "es" || st === "en") { initial = st; } }
+      } catch (e) { /* sin preferencia guardada */ }
+      if (!initial) { initial = (navigator.language || "es").slice(0, 2).toLowerCase() === "es" ? "es" : "en"; }
+      if (initial === "en") { setLang("en"); }
+    })();
+  </script>
+  <script>
     function switchPbiTab(event, tabId) {
       var card = event.currentTarget.closest(".pbi-card");
       card.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
@@ -762,11 +953,17 @@
         "Automatización de Procesos con Python & LLMs",
         "Optimización Financiera & Arquitectura de Datos (SSoT)"
       ];
+      var phrasesEn = [
+        "Data Analyst & Business Intelligence Specialist",
+        "AI Solutions & Prompt Engineering Lead",
+        "Process Automation with Python & LLMs",
+        "Financial Optimization & Data Architecture (SSoT)"
+      ];
       var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (el && !reduce) {
         var p = 0, c = 0, deleting = false;
         (function tick() {
-          var full = phrases[p], delay = deleting ? 25 : 55;
+          var list = document.documentElement.lang === "en" ? phrasesEn : phrases, full = list[p % list.length], delay = deleting ? 25 : 55;
           c += deleting ? -1 : 1;
           el.textContent = full.slice(0, c);
           if (!deleting && c === full.length) { deleting = true; delay = 1800; }

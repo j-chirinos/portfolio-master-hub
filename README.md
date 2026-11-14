@@ -43,6 +43,10 @@ Abrir <http://localhost:8080>. También funciona abriendo `index.html` directame
 
 - Completar las métricas de ROI operativo con cifras reales verificadas por el autor (hoy se muestran de forma cualitativa).
 
+## Idioma (ES / EN)
+
+Selector ES/EN en la barra de navegación. El HTML queda en español (respaldo sin JS) y el inglés se aplica con JavaScript vanilla por coincidencia exacta de texto. Orden de preferencia: `?lang=en|es` en la URL, luego la última elección (localStorage) y, por defecto, el idioma del navegador (inglés si no es español).
+
 ---
 
 ## English
@@ -54,4 +58,5 @@ Central portfolio of a **Senior Data Analyst & Process Automation Lead** (JW-Sol
 - **Security:** restrictive Content-Security-Policy via `<meta>`, no `innerHTML`, no third-party resources.
 - **Accessibility:** `aria-pressed` filters, visible focus, `prefers-reduced-motion`, responsive layout.
 - **Run locally:** `python -m http.server 8080` inside the folder, then open <http://localhost:8080> (or open `index.html` directly).
+- **Language:** ES/EN toggle in the top bar (vanilla JS, no dependencies). Preference order: `?lang=en|es` URL parameter, last choice (localStorage), then browser language (English unless Spanish).
 - **Pending:** replace qualitative ROI metrics with author-verified figures.
