@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; frame-src https://app.powerbi.com; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; frame-src 'self' https://app.powerbi.com; base-uri 'none'; form-action 'none'">
   <meta name="description" content="Portafolio de Senior Data Analyst & Process Automation Lead: BI, SSoT, ETL y automatización en banca y seguros.">
   <title>Portfolio Master Hub | Data Analyst &amp; Automation Lead</title>
   <style>
@@ -105,6 +105,23 @@
     .repo-link:hover, .repo-link:focus-visible { text-decoration: underline; }
     .repo-cta { display: inline-block; margin-top: 12px; font-size: .9rem; font-weight: 600; color: var(--green); text-decoration: none; }
     .repo-cta:hover, .repo-cta:focus-visible { text-decoration: underline; }
+    .repo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 12px; }
+    .repo-actions .repo-cta { margin-top: 0; }
+    .repo-detail { font: inherit; font-size: .9rem; font-weight: 700; color: var(--green); background: transparent; border: 1px solid var(--green); border-radius: 999px; padding: 6px 16px; cursor: pointer; transition: background .15s, color .15s; }
+    .repo-detail:hover, .repo-detail:focus-visible { background: var(--green); color: #000; }
+    /* Modal de proyectos (reutiliza .skills-modal / .skills-dialog) */
+    .project-dialog { width: min(900px, 100%); }
+    .proj-tagline { color: var(--muted); font-size: .98rem; margin-bottom: 16px; }
+    .proj-panel h3 { font-size: 1rem; color: var(--accent-blue); margin: 16px 0 6px; }
+    .proj-panel h3:first-child { margin-top: 0; }
+    .proj-panel p { color: var(--muted); font-size: .95rem; }
+    .proj-panel ul.proj-list { color: var(--muted); font-size: .93rem; padding-left: 20px; display: grid; gap: 4px; }
+    .proj-panel ul.proj-list li::marker { color: var(--green); }
+    .proj-frame { width: 100%; height: min(560px, 64vh); border: 1px solid rgba(0, 255, 255, 0.25); border-radius: 12px; background: #0f172a; }
+    .proj-note { font-size: .85rem; margin-top: 10px; }
+    .proj-soon { padding: 22px; border: 1px dashed var(--green); border-radius: 12px; color: var(--muted); text-align: center; }
+    .proj-link { display: inline-block; margin-top: 12px; font-weight: 600; color: var(--green); text-decoration: none; }
+    .proj-link:hover, .proj-link:focus-visible { text-decoration: underline; }
     .box p { color: var(--muted); font-size: .93rem; }
     .soon { display: inline-block; margin-top: 12px; font-size: .75rem; padding: 2px 10px; border-radius: 999px; border: 1px dashed var(--green); color: var(--green); }
 
@@ -401,6 +418,24 @@
     .lang-btn:hover { color: var(--accent-blue); }
     .lang-btn[aria-pressed="true"] { background: var(--accent-blue); color: #000; }
     .lang-btn:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: -2px; }
+
+    /* =====================================================
+       Refinamiento final (antigravity_v1): jerarquía Hero y fluidez
+       ===================================================== */
+    .hero-container { width: min(1120px, 100% - 32px); margin-inline: auto; }
+    .hero-text { gap: 22px; }
+    .hero-text h1 { line-height: 1.14; margin-bottom: 2px; }
+    .hero-text .hero-badges { margin-block: 4px; gap: 10px; }
+    .hero-text .typewriter-text { min-height: 2.8em; padding-block: 4px; }
+    .hero-text .cta { margin-top: 6px; }
+    .hero-container > .stats-grid { margin-top: 20px; }
+
+    @media (max-width: 820px) {
+      .hero-container { gap: 24px; }
+      .hero-text { gap: 18px; }
+      .hero-text .typewriter-text { min-height: 3.2em; }
+      .hero-container > .stats-grid { margin-top: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -420,7 +455,7 @@
   </nav>
 
   <header class="hero">
-    <div class="container">
+    <div class="container hero-container">
       <div class="hero-text">
       <span class="badge">Portfolio Master Hub</span>
       <p class="hero-greeting">👋 Hola, soy <strong>J. Chirinos</strong></p>
@@ -656,22 +691,34 @@
           <div class="box">
             <h3><a class="repo-link" href="https://github.com/j-chirinos/segubot-ocr-agent" target="_blank" rel="noopener noreferrer">segubot-ocr-agent</a></h3>
             <p>Pipeline OCR de comprobantes de pago: extracción, validación por Regex y registro en Google Sheets como SSoT.</p>
-            <a class="repo-cta" href="https://github.com/j-chirinos/segubot-ocr-agent" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            <div class="repo-actions">
+              <button type="button" class="repo-detail" data-project="segubot" aria-haspopup="dialog" aria-controls="projectModal">Ver detalle y demo</button>
+              <a class="repo-cta" href="https://github.com/j-chirinos/segubot-ocr-agent" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            </div>
           </div>
           <div class="box">
             <h3><a class="repo-link" href="https://github.com/j-chirinos/v15-sports-predictor" target="_blank" rel="noopener noreferrer">v15-sports-predictor</a></h3>
             <p>Ingesta de datos, motor estocástico (Poisson + Monte Carlo) y panel en Streamlit.</p>
-            <a class="repo-cta" href="https://github.com/j-chirinos/v15-sports-predictor" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            <div class="repo-actions">
+              <button type="button" class="repo-detail" data-project="v15" aria-haspopup="dialog" aria-controls="projectModal">Ver detalle y demo</button>
+              <a class="repo-cta" href="https://github.com/j-chirinos/v15-sports-predictor" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            </div>
           </div>
           <div class="box">
             <h3><a class="repo-link" href="https://github.com/j-chirinos/ssot-data-normalizer" target="_blank" rel="noopener noreferrer">ssot-data-normalizer</a></h3>
             <p>Pipeline modular de limpieza con tipado estricto y pruebas en pytest.</p>
-            <a class="repo-cta" href="https://github.com/j-chirinos/ssot-data-normalizer" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            <div class="repo-actions">
+              <button type="button" class="repo-detail" data-project="ssot" aria-haspopup="dialog" aria-controls="projectModal">Ver detalle y demo</button>
+              <a class="repo-cta" href="https://github.com/j-chirinos/ssot-data-normalizer" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            </div>
           </div>
           <div class="box">
             <h3><a class="repo-link" href="https://github.com/j-chirinos/jw-solutions-utility-hub" target="_blank" rel="noopener noreferrer">jw-solutions-utility-hub</a></h3>
             <p>Utilidades de formateo, validación e i18n (es/en) con micro-app web sin dependencias.</p>
-            <a class="repo-cta" href="https://github.com/j-chirinos/jw-solutions-utility-hub" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            <div class="repo-actions">
+              <button type="button" class="repo-detail" data-project="utility" aria-haspopup="dialog" aria-controls="projectModal">Ver detalle y demo</button>
+              <a class="repo-cta" href="https://github.com/j-chirinos/jw-solutions-utility-hub" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
+            </div>
           </div>
         </div>
       </div>
@@ -716,6 +763,14 @@
     </div>
   </div>
 
+  <div id="projectModal" class="skills-modal" aria-hidden="true">
+    <div class="skills-dialog project-dialog" role="dialog" aria-modal="true" aria-labelledby="projTitle">
+      <button id="closeProjBtn" class="skills-close" type="button" aria-label="Cerrar">✕</button>
+      <h2 id="projTitle"></h2>
+      <div id="projBody"></div>
+    </div>
+  </div>
+
   <footer>
     <div class="container">
       <div class="footer-card">
@@ -740,6 +795,7 @@
         "Impacto": "Impact",
         "Proyectos": "Projects",
         "Ecosistema": "Ecosystem",
+        "Ver detalle y demo": "View details & demo",
         "👋 Hola, soy": "👋 Hi, I'm",
         "Banca & Seguros": "Banking & Insurance",
         "Data Analyst & Business Intelligence Specialist. AI Solutions & Prompt Engineering Lead. Automatización de Procesos con Python & LLMs. Optimización Financiera & Arquitectura de Datos (SSoT).": "Data Analyst & Business Intelligence Specialist. AI Solutions & Prompt Engineering Lead. Process Automation with Python & LLMs. Financial Optimization & Data Architecture (SSoT).",
@@ -1030,6 +1086,188 @@
           else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
         }
       });
+    })();
+  </script>
+  <script>
+    /* Modal de proyectos del ecosistema: contenido es/en generado con textContent (sin innerHTML). */
+    (function () {
+      "use strict";
+      var UI = {
+        es: { summary: "Resumen", built: "Cómo se construyó", demo: "Demo", code: "Código", problem: "Problema que resuelve", what: "Qué hace", how: "Cómo se construyó", stack: "Stack", quality: "Seguridad y calidad", close: "Cerrar", tabs: "Secciones del proyecto",
+              soon: "Demo interactiva en preparación. Mientras tanto, revisa el código y la documentación en GitHub.", note: "La demo corre 100 % en tu navegador; ningún dato sale de tu equipo.", newTab: "Abrir demo en pestaña nueva ↗", repo: "Ver repositorio en GitHub →", frame: "Demo interactiva", codeText: "Código fuente, pruebas y documentación bilingüe en el repositorio público." },
+        en: { summary: "Summary", built: "How it was built", demo: "Demo", code: "Code", problem: "Problem solved", what: "What it does", how: "How it was built", stack: "Stack", quality: "Security & quality", close: "Close", tabs: "Project sections",
+              soon: "Interactive demo coming soon. Meanwhile, browse the code and documentation on GitHub.", note: "The demo runs 100% in your browser; no data leaves your device.", newTab: "Open demo in new tab ↗", repo: "View repository on GitHub →", frame: "Interactive demo", codeText: "Source code, tests and bilingual documentation in the public repository." }
+      };
+      var BASE = "https://github.com/j-chirinos/";
+      var P = {
+        utility: { name: "jw-solutions-utility-hub", repo: "jw-solutions-utility-hub", demo: "demos/utility-hub/index.html",
+          es: { tagline: "Utilidades técnicas de formateo, validación e i18n, con una micro-app web sin dependencias.",
+                problem: "Las tareas técnicas repetitivas (formatear JSON, validar identificadores, codificar y decodificar) suelen resolverse en sitios externos que reciben tus datos.",
+                what: ["Formatea, minifica y ordena claves de JSON, con la línea y columna exactas del error.", "Normaliza espacios y tabuladores de bloques de código.", "Codifica y decodifica Base64 y URL; calcula SHA-256.", "Valida JSON, UUID, Base64 y códigos de idioma BCP-47.", "Interfaz en español e inglés."],
+                built: ["Biblioteca Python con módulos separados: formatter, validator e i18n (negociación de Accept-Language).", "Micro-app web equivalente en JavaScript puro, con el mismo comportamiento en normalización de espacios y posición de errores.", "Pruebas unitarias con pytest sobre los flujos críticos."],
+                stack: ["Python 3 (biblioteca estándar)", "JavaScript vanilla", "HTML/CSS", "pytest"],
+                quality: ["Sin dependencias ni CDN.", "CSP restrictiva y salida solo con textContent.", "Tope de 5 000 000 de caracteres por entrada.", "Todo se procesa en el navegador."] },
+          en: { tagline: "Technical utilities for formatting, validation and i18n, with a dependency-free web micro-app.",
+                problem: "Repetitive technical tasks (formatting JSON, validating identifiers, encoding and decoding) are often done on external sites that receive your data.",
+                what: ["Formats, minifies and sorts JSON keys, reporting the exact line and column of an error.", "Normalizes whitespace and tabs in code blocks.", "Encodes and decodes Base64 and URLs; computes SHA-256.", "Validates JSON, UUID, Base64 and BCP-47 language codes.", "Spanish and English interface."],
+                built: ["Python library with separate modules: formatter, validator and i18n (Accept-Language negotiation).", "Equivalent web micro-app in plain JavaScript, aligned on whitespace normalization and error positions.", "Unit tests with pytest on the critical flows."],
+                stack: ["Python 3 (standard library)", "Vanilla JavaScript", "HTML/CSS", "pytest"],
+                quality: ["No dependencies or CDN.", "Strict CSP and output via textContent only.", "5,000,000-character input cap.", "Everything is processed in the browser."] } },
+        segubot: { name: "segubot-ocr-agent", repo: "segubot-ocr-agent", demo: "demos/segubot-validator/index.html",
+          es: { tagline: "Agente que lee comprobantes de pago, valida sus datos clave y los registra como fuente única de verdad.",
+                problem: "La conciliación manual de comprobantes es lenta y propensa a errores: montos mal transcritos y referencias duplicadas.",
+                what: ["Recibe la imagen de un comprobante por API.", "Extrae el texto con OCR.", "Valida monto, fecha, referencia y banco con reglas Regex (formatos VE y US).", "Rechaza referencias duplicadas y archiva en Drive y Google Sheets."],
+                built: ["Pipeline: preprocesado con OpenCV, Tesseract como motor principal y EasyOCR de respaldo.", "Validador Regex con montos en Decimal y catálogo de bancos.", "Sincronización con Google Drive y Sheets mediante Service Account."],
+                stack: ["Python", "Flask", "OpenCV", "Tesseract / EasyOCR", "Google API", "pytest"],
+                quality: ["Extensiones permitidas, tope de 10 MB y verificación real de la imagen.", "El nombre del archivo del cliente nunca toca el disco.", "Celdas sanitizadas contra inyección de fórmulas.", "Secretos solo por variables de entorno."] },
+          en: { tagline: "Agent that reads payment receipts, validates their key data and records them as a single source of truth.",
+                problem: "Manual receipt reconciliation is slow and error-prone: mistyped amounts and duplicated references.",
+                what: ["Receives a receipt image through an API.", "Extracts the text with OCR.", "Validates amount, date, reference and bank with Regex rules (VE and US formats).", "Rejects duplicate references and archives to Drive and Google Sheets."],
+                built: ["Pipeline: OpenCV preprocessing, Tesseract as primary engine and EasyOCR as fallback.", "Regex validator with Decimal amounts and a bank catalog.", "Google Drive and Sheets sync through a Service Account."],
+                stack: ["Python", "Flask", "OpenCV", "Tesseract / EasyOCR", "Google API", "pytest"],
+                quality: ["Allowed extensions, 10 MB cap and real image verification.", "The client filename never touches disk.", "Cells sanitized against formula injection.", "Secrets only through environment variables."] } },
+        ssot: { name: "ssot-data-normalizer", repo: "ssot-data-normalizer", demo: "demos/ssot-cleaner/index.html",
+          es: { tagline: "Pipeline modular que convierte datos heterogéneos en una tabla tipada, lista para ser la Única Fuente de Verdad.",
+                problem: "Los Excel y CSV con nulos disfrazados y formatos mezclados impiden contar con una fuente de verdad confiable.",
+                what: ["Estandariza columnas a snake_case sin acentos y resuelve alias.", "Convierte nulos disfrazados (N/A, -, S/D…) en valores nulos reales.", "Aplica tipos estrictos y reporta lo que no pudo convertir.", "Elimina filas incompletas y duplicados por clave de negocio."],
+                built: ["Seis etapas puras sobre pandas.", "Esquema declarativo (columnas, tipo, obligatoria, clave, alias).", "Informe auditable de limpieza; nunca modifica los datos de entrada."],
+                stack: ["Python", "pandas", "NumPy", "pytest"],
+                quality: ["Tipos nullable estrictos.", "Números en formato VE y US; fechas día-primero e ISO.", "Cada valor descartado o forzado queda contabilizado.", "Pruebas con pytest."] },
+          en: { tagline: "Modular pipeline that turns heterogeneous data into a typed table, ready to be the Single Source of Truth.",
+                problem: "Excel and CSV files with disguised nulls and mixed formats prevent a reliable source of truth.",
+                what: ["Standardizes columns to accent-free snake_case and resolves aliases.", "Turns disguised nulls (N/A, -, S/D…) into real nulls.", "Applies strict types and reports what could not be converted.", "Drops incomplete rows and duplicates by business key."],
+                built: ["Six pure stages on pandas.", "Declarative schema (columns, type, required, key, aliases).", "Auditable cleaning report; never mutates the input data."],
+                stack: ["Python", "pandas", "NumPy", "pytest"],
+                quality: ["Strict nullable types.", "Numbers in VE and US formats; day-first and ISO dates.", "Every dropped or coerced value is accounted for.", "pytest suite."] } },
+        v15: { name: "v15-sports-predictor", repo: "v15-sports-predictor", demo: "demos/sports-simulator/index.html",
+          es: { tagline: "Motor estocástico que proyecta resultados de partidos, con un tablero ejecutivo.",
+                problem: "Proyectar un partido con intuición no es auditable; un modelo explícito permite contrastar y reproducir resultados.",
+                what: ["Estima ataque y defensa de cada equipo frente al promedio de la liga.", "Simula miles de partidos (Monte Carlo) y obtiene probabilidades de victoria, empate y derrota.", "Contrasta la simulación con el cálculo analítico exacto.", "Muestra los marcadores más probables en un panel."],
+                built: ["Ingesta de CSV con normalización y descarte de filas inválidas.", "Modelo de Poisson con contracción hacia el promedio y semilla reproducible.", "Tablero en Streamlit."],
+                stack: ["Python", "NumPy", "pandas", "Streamlit", "pytest"],
+                quality: ["Validación de esquema y tope de 50 MB.", "Límites en el número de simulaciones.", "Los datos de demostración son sintéticos; las proyecciones son ilustrativas, no asesoría de apuestas ni financiera."] },
+          en: { tagline: "Stochastic engine that projects match outcomes, with an executive dashboard.",
+                problem: "Projecting a match by intuition is not auditable; an explicit model lets you cross-check and reproduce results.",
+                what: ["Estimates each team's attack and defense against the league average.", "Simulates thousands of matches (Monte Carlo) to get win, draw and loss probabilities.", "Cross-checks the simulation against the exact analytical result.", "Shows the most likely scorelines in a dashboard."],
+                built: ["CSV ingestion with normalization and invalid-row filtering.", "Poisson model shrunk toward the average, with a reproducible seed.", "Streamlit dashboard."],
+                stack: ["Python", "NumPy", "pandas", "Streamlit", "pytest"],
+                quality: ["Schema validation and 50 MB cap.", "Limits on the number of simulations.", "Demo data is synthetic; projections are illustrative, not betting or financial advice."] } }
+      };
+
+      var modal = document.getElementById("projectModal");
+      var body = document.getElementById("projBody");
+      var title = document.getElementById("projTitle");
+      var closeBtn = document.getElementById("closeProjBtn");
+      var current = null, activeTab = "summary", lastFocus = null;
+
+      function lang() { return document.documentElement.lang === "en" ? "en" : "es"; }
+      function el(tag, cls, text) {
+        var n = document.createElement(tag);
+        if (cls) { n.className = cls; }
+        if (text !== undefined) { n.textContent = text; }
+        return n;
+      }
+      function section(parent, heading, content) {
+        parent.appendChild(el("h3", null, heading));
+        if (Array.isArray(content)) {
+          var ul = el("ul", "proj-list");
+          content.forEach(function (t) { ul.appendChild(el("li", null, t)); });
+          parent.appendChild(ul);
+        } else { parent.appendChild(el("p", null, content)); }
+      }
+      function ghLink(p, text) {
+        var a = el("a", "proj-link", text);
+        a.href = BASE + p.repo; a.target = "_blank"; a.rel = "noopener noreferrer";
+        return a;
+      }
+
+      function panel(id, p, d, u) {
+        var box = el("div", "proj-panel");
+        box.id = "proj-" + id; box.setAttribute("role", "tabpanel"); box.setAttribute("aria-labelledby", "proj-tab-" + id);
+        if (id === "summary") {
+          section(box, u.problem, d.problem);
+          section(box, u.what, d.what);
+        } else if (id === "built") {
+          section(box, u.how, d.built);
+          section(box, u.stack, d.stack);
+          section(box, u.quality, d.quality);
+        } else if (id === "demo") {
+          if (p.demo) {
+            var f = document.createElement("iframe");
+            f.className = "proj-frame"; f.src = p.demo; f.title = u.frame + " — " + p.name;
+            f.setAttribute("sandbox", "allow-scripts"); f.setAttribute("referrerpolicy", "no-referrer"); f.setAttribute("loading", "lazy");
+            box.appendChild(f);
+            box.appendChild(el("p", "proj-note", u.note));
+            var a = el("a", "proj-link", u.newTab);
+            a.href = p.demo; a.target = "_blank"; a.rel = "noopener noreferrer";
+            box.appendChild(a);
+          } else { box.appendChild(el("div", "proj-soon", u.soon)); }
+        } else {
+          box.appendChild(el("p", null, u.codeText));
+          box.appendChild(ghLink(p, u.repo));
+        }
+        return box;
+      }
+
+      function render() {
+        if (!current) { return; }
+        var p = P[current], l = lang(), d = p[l], u = UI[l];
+        title.textContent = p.name;
+        closeBtn.setAttribute("aria-label", u.close);
+        body.textContent = "";
+        body.appendChild(el("p", "proj-tagline", d.tagline));
+        var ids = ["summary", "built", "demo", "code"];
+        var tabs = el("div", "skills-tabs"); tabs.setAttribute("role", "tablist"); tabs.setAttribute("aria-label", u.tabs);
+        ids.forEach(function (id, i) {
+          var b = el("button", "skills-tab", u[id]);
+          b.type = "button"; b.id = "proj-tab-" + id; b.setAttribute("role", "tab"); b.setAttribute("aria-controls", "proj-" + id);
+          b.setAttribute("aria-selected", String(id === activeTab)); b.tabIndex = id === activeTab ? 0 : -1;
+          b.addEventListener("click", function () { activeTab = id; render(); document.getElementById("proj-tab-" + id).focus(); });
+          b.addEventListener("keydown", function (e) {
+            var n = null;
+            if (e.key === "ArrowRight") { n = ids[(i + 1) % ids.length]; }
+            else if (e.key === "ArrowLeft") { n = ids[(i - 1 + ids.length) % ids.length]; }
+            if (n) { e.preventDefault(); activeTab = n; render(); document.getElementById("proj-tab-" + n).focus(); }
+          });
+          tabs.appendChild(b);
+        });
+        body.appendChild(tabs);
+        body.appendChild(panel(activeTab, p, d, u));
+      }
+
+      function openProject(id, trigger) {
+        if (!P[id]) { return; }
+        current = id; activeTab = "summary"; lastFocus = trigger;
+        render();
+        modal.classList.add("open"); modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        closeBtn.focus();
+      }
+      function closeProject() {
+        modal.classList.remove("open"); modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        body.textContent = ""; current = null; /* descarta el iframe de la demo */
+        if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+      }
+
+      Array.prototype.forEach.call(document.querySelectorAll(".repo-detail"), function (b) {
+        b.addEventListener("click", function () { openProject(b.getAttribute("data-project"), b); });
+      });
+      closeBtn.addEventListener("click", closeProject);
+      modal.addEventListener("click", function (e) { if (e.target === modal) { closeProject(); } });
+      document.addEventListener("keydown", function (e) {
+        if (!modal.classList.contains("open")) { return; }
+        if (e.key === "Escape") { closeProject(); return; }
+        if (e.key === "Tab") {
+          var f = Array.prototype.slice.call(modal.querySelectorAll("button:not([tabindex='-1']), a[href]"));
+          if (!f.length) { return; }
+          var first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+      /* Re-renderiza al cambiar el idioma del portafolio (setLang actualiza <html lang>). */
+      new MutationObserver(function () { if (current) { render(); } }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
     })();
   </script>
 </body>

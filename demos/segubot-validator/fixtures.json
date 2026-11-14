@@ -1,0 +1,393 @@
+{
+ "cases": [
+  {
+   "text": "BANESCO\nComprobante de transferencia\nFecha: 15/03/2025\nMonto: Bs. 1.234,56\nNro. de Referencia: 0012345678",
+   "expected": {
+    "amount": "1234.56",
+    "date": "2025-03-15",
+    "reference": "0012345678",
+    "bank": "Banesco",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Banco Mercantil C.A.\nPago Móvil BDV\nFecha 05.11.2024\nImporte 150,00 Bs\nOperación #123456789",
+   "expected": {
+    "amount": "150.00",
+    "date": "2024-11-05",
+    "reference": "123456789",
+    "bank": "Mercantil",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Zelle payment\n2025-03-15 14:22\nTotal: $ 25.00\nConfirmación: 55667788",
+   "expected": {
+    "amount": "25.00",
+    "date": "2025-03-15",
+    "reference": "55667788",
+    "bank": "Zelle",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Binance Pay\n15-03-25\nMonto transferido: 1,234.56 USD\nRef. 987654",
+   "expected": {
+    "amount": "1234.56",
+    "date": "2025-03-15",
+    "reference": "987654",
+    "bank": "Binance",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "texto ilegible sin datos",
+   "expected": {
+    "amount": null,
+    "date": null,
+    "reference": null,
+    "bank": null,
+    "is_valid": false,
+    "errors": [
+     "Monto no detectado o inválido",
+     "Fecha no detectada o inválida",
+     "Número de referencia no detectado"
+    ]
+   }
+  },
+  {
+   "text": "Fecha: 01/01/2999\nMonto: 10,00\nRef: 123456",
+   "expected": {
+    "amount": "10.00",
+    "date": "2999-01-01",
+    "reference": "123456",
+    "bank": null,
+    "is_valid": false,
+    "errors": [
+     "La fecha es futura"
+    ]
+   }
+  },
+  {
+   "text": "Fecha: 29/02/2025\nMonto: 10,00\nRef: 123456",
+   "expected": {
+    "amount": "10.00",
+    "date": null,
+    "reference": "123456",
+    "bank": null,
+    "is_valid": false,
+    "errors": [
+     "Fecha no detectada o inválida"
+    ]
+   }
+  },
+  {
+   "text": "Fecha: 29/02/2024\nMonto: 10,00\nRef: 123456",
+   "expected": {
+    "amount": "10.00",
+    "date": "2024-02-29",
+    "reference": "123456",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Fecha: 00/01/2025 y 0000-01-01 y 12/12/0000\nMonto: 10,00\nRef: 123456",
+   "expected": {
+    "amount": "10.00",
+    "date": "2000-12-12",
+    "reference": "123456",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 0,00 Total: 50,00\nFecha: 10/10/2020\nReferencia 12 Ref 4455667",
+   "expected": {
+    "amount": "50.00",
+    "date": "2020-10-10",
+    "reference": "4455667",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Transferencia por Bs. 2.500,75 exitosa 20/01/2023 Nro de operación 000456789012 Banco de Venezuela",
+   "expected": {
+    "amount": "2500.75",
+    "date": "2023-01-20",
+    "reference": "000456789012",
+    "bank": "Banco de Venezuela",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "BNC Banco Nacional de Crédito\nTotal a pagar: VES 3.000\n2022-12-31\nComprobante No. 77889900",
+   "expected": {
+    "amount": "3000",
+    "date": "2022-12-31",
+    "reference": "77889900",
+    "bank": "BNC",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "PROVINCIAL BBVA\nVALOR: USD 1,000.50\n31/12/22\nREF NRO: 123456789012345678901",
+   "expected": {
+    "amount": "1000.50",
+    "date": "2022-12-31",
+    "reference": "12345678901234567890",
+    "bank": "Provincial",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Mercantil\nMONTO Bs 500\n7/3/2021\nCONFIRMACIÓN: #00991122",
+   "expected": {
+    "amount": "500",
+    "date": "2021-03-07",
+    "reference": "00991122",
+    "bank": "Mercantil",
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: -50,00\nBs 75,5\n2020-02-30 11/11/2011\nOperación 4321",
+   "expected": {
+    "amount": "75.5",
+    "date": "2011-11-11",
+    "reference": "4321",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 1.234,56\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "1234.56",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 1,234.56\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "1234.56",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 1.234.567,89\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "1234567.89",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 150,00\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "150.00",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 25.50\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "25.50",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 1.234\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "1234",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 500\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "500",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: \nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": null,
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": false,
+    "errors": [
+     "Monto no detectado o inválido"
+    ]
+   }
+  },
+  {
+   "text": "Monto: 0,00\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": null,
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": false,
+    "errors": [
+     "Monto no detectado o inválido"
+    ]
+   }
+  },
+  {
+   "text": "Monto: 0012,5\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "12.5",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 1,5\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "1.5",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 12.345,6\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "12345.6",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 1.2.3\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "1.2",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  },
+  {
+   "text": "Monto: 9999999999,99\nFecha: 01/02/2020\nRef: 111222",
+   "expected": {
+    "amount": "9999999999.99",
+    "date": "2020-02-01",
+    "reference": "111222",
+    "bank": null,
+    "is_valid": true,
+    "errors": []
+   }
+  }
+ ],
+ "parse_amount": [
+  {
+   "raw": "1.234,56",
+   "expected": "1234.56"
+  },
+  {
+   "raw": "1,234.56",
+   "expected": "1234.56"
+  },
+  {
+   "raw": "1.234.567,89",
+   "expected": "1234567.89"
+  },
+  {
+   "raw": "150,00",
+   "expected": "150.00"
+  },
+  {
+   "raw": "25.50",
+   "expected": "25.50"
+  },
+  {
+   "raw": "1.234",
+   "expected": "1234"
+  },
+  {
+   "raw": "500",
+   "expected": "500"
+  },
+  {
+   "raw": "",
+   "expected": null
+  },
+  {
+   "raw": "0,00",
+   "expected": "0.00"
+  },
+  {
+   "raw": "0012,5",
+   "expected": "12.5"
+  },
+  {
+   "raw": "1,5",
+   "expected": "1.5"
+  },
+  {
+   "raw": "12.345,6",
+   "expected": "12345.6"
+  },
+  {
+   "raw": "1.2.3",
+   "expected": "123"
+  },
+  {
+   "raw": "9999999999,99",
+   "expected": "9999999999.99"
+  }
+ ]
+}

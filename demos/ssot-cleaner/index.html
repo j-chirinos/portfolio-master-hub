@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>SSoT Data Cleaner</title>
+  <style>
+    :root { --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8; --blue:#38bdf8; --green:#4ade80; --red:#f87171; --amber:#fbbf24; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px 16px 40px; }
+    .wrap { width: min(1040px, 100%); margin-inline: auto; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    h1 { font-size: 1.5rem; } h1 span { color: var(--blue); }
+    select, input, textarea, button { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+    select, input[type="text"] { padding: 4px 8px; }
+    select:focus, input:focus-visible, textarea:focus, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .privacy { background: rgba(74,222,128,.08); border: 1px solid var(--green); color: var(--green); border-radius: 8px; padding: 8px 12px; font-size: .88rem; margin-bottom: 14px; }
+    h2 { font-size: .85rem; color: var(--muted); font-weight: 600; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: .06em; }
+    h2:first-of-type { margin-top: 0; }
+    textarea { width: 100%; min-height: 150px; padding: 10px; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: .82rem; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+    .btns button { padding: 6px 12px; cursor: pointer; font-size: .88rem; }
+    .btns button:hover { border-color: var(--blue); }
+    .scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+    table { border-collapse: collapse; width: 100%; font-size: .82rem; font-variant-numeric: tabular-nums; }
+    th, td { padding: 4px 8px; border: 1px solid var(--border); text-align: left; white-space: nowrap; }
+    th { color: var(--muted); font-weight: 600; background: rgba(0,0,0,.2); }
+    th small { display: block; color: var(--blue); font-weight: 400; }
+    td.na { color: var(--muted); font-style: italic; }
+    td.bad { background: rgba(248,113,113,.18); color: var(--red); }
+    #schema input[type="text"] { width: 100%; min-width: 90px; }
+    #schema input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); }
+    #schema td { text-align: center; } #schema td:first-child, #schema td:last-child { text-align: left; }
+    .err { background: rgba(248,113,113,.1); border: 1px solid var(--red); color: var(--red); border-radius: 8px; padding: 10px 12px; font-weight: 600; }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; }
+    .card .k { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .card .v { font-size: 1.3rem; font-weight: 700; }
+    .map { font-size: .85rem; color: var(--muted); margin-bottom: 8px; }
+    .map b { color: var(--text); }
+    .note { font-size: .8rem; color: var(--muted); margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>SSoT <span id="title">Limpiador de datos</span></h1>
+      <select id="lang" aria-label="Idioma / Language"><option value="es">Español</option><option value="en">English</option></select>
+    </header>
+    <p class="privacy" id="privacy" role="note"></p>
+
+    <h2 id="h-raw"></h2>
+    <textarea id="raw" spellcheck="false" maxlength="200000" aria-labelledby="h-raw"></textarea>
+    <div class="btns"><button type="button" id="btnSample"></button></div>
+
+    <h2 id="h-schema"></h2>
+    <div class="scroll"><table id="schema"></table></div>
+    <div class="btns"><button type="button" id="btnAdd"></button><button type="button" id="btnReset"></button></div>
+
+    <h2 id="h-res"></h2>
+    <div id="out"></div>
+    <p class="note" id="note"></p>
+  </div>
+
+  <script>
+    // ENGINE-START (port de src/ssot_normalizer/cleaner.py; mantener alineado con fixtures.json)
+    var ENGINE = (function () {
+      var NA_TOKENS = new Set(["", "n/a", "na", "null", "none", "nan", "nat", "-", "--", "s/d", "nd", "sin dato"]);
+      var TRUE_TOKENS = new Set(["true", "t", "1", "yes", "y", "si", "sí", "s", "verdadero"]);
+      var FALSE_TOKENS = new Set(["false", "f", "0", "no", "n", "falso"]);
+      var DTYPE_LABEL = { string: "string", int: "Int64", float: "Float64", date: "datetime64[ns]", bool: "boolean" };
+
+      function SchemaError(message) { var e = new Error(message); e.name = "SchemaError"; return e; }
+
+      function toSnakeCase(name) {
+        return String(name).normalize("NFKD").replace(/[^\x00-\x7F]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+      }
+
+      function parseNumber(value) {
+        var cleaned = value.replace(/[^\d,.\-+]/g, "");
+        if (!/\d/.test(cleaned)) { return null; }
+        var dots = cleaned.split(".").length - 1, commas = cleaned.split(",").length - 1, dec = null;
+        if (dots && commas) { dec = cleaned.lastIndexOf(".") > cleaned.lastIndexOf(",") ? "." : ","; }
+        else if (dots || commas) {
+          var sep = dots ? "." : ",", tail = cleaned.slice(cleaned.lastIndexOf(sep) + 1);
+          dec = (Math.max(dots, commas) === 1 && tail.length !== 3) ? sep : null;
+        }
+        var normalized;
+        if (dec) { var at = cleaned.lastIndexOf(dec); normalized = cleaned.slice(0, at).replace(/[.,]/g, "") + "." + cleaned.slice(at + 1); }
+        else { normalized = cleaned.replace(/[.,]/g, ""); }
+        return /^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(normalized) ? Number(normalized) : null;
+      }
+
+      function isMissing(v) {
+        if (v === null || v === undefined) { return true; }
+        if (typeof v === "string") { return NA_TOKENS.has(v.trim().toLowerCase()); }
+        if (typeof v === "number") { return Number.isNaN(v); }
+        return false;
+      }
+
+      function pad(n, w) { var s = String(n); while (s.length < w) { s = "0" + s; } return s; }
+      function validDate(y, m, d) {
+        if (y < 1 || y > 9999 || m < 1 || m > 12 || d < 1) { return null; }
+        var dt = new Date(0); dt.setUTCFullYear(y, m - 1, d);
+        if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) { return null; }
+        return pad(y, 4) + "-" + pad(m, 2) + "-" + pad(d, 2);
+      }
+      var TIME = "(?:[ T]\\d{1,2}:\\d{2}(?::\\d{2}(?:\\.\\d+)?)?(?:Z|[+-]\\d{2}:?\\d{2})?)?";
+      var ISO_RE = new RegExp("^(\\d{4})-(\\d{1,2})-(\\d{1,2})" + TIME + "$");
+      var DMY_RE = new RegExp("^(\\d{1,2})([/.\\-])(\\d{1,2})\\2(\\d{4}|\\d{2})" + TIME + "$");
+
+      // Subconjunto de fechas de pandas (dayfirst, format="mixed"): ISO con guiones y D/M/A con / . -
+      // (año de 2 dígitos con la ventana de ±50 años de dateutil). Meses en texto no están soportados.
+      function parseDate(value, currentYear) {
+        var s = String(value).trim(), m = ISO_RE.exec(s);
+        if (m) { return validDate(+m[1], +m[2], +m[3]); }
+        m = DMY_RE.exec(s);
+        if (!m) { return null; }
+        var a = +m[1], b = +m[3], year = +m[4], day, month;
+        if (m[4].length === 2) {
+          year += Math.floor(currentYear / 100) * 100;
+          if (year >= currentYear + 50) { year -= 100; } else if (year < currentYear - 50) { year += 100; }
+        }
+        if (b <= 12) { day = a; month = b; } else if (a <= 12) { month = a; day = b; } else { return null; }
+        return validDate(year, month, day);
+      }
+
+      function titleCase(s) { return s.toLowerCase().replace(/\p{L}+/gu, function (w) { return w.charAt(0).toUpperCase() + w.slice(1); }); }
+
+      function toStringCol(values, rule) {
+        return { values: values.map(function (v) {
+          if (v === null || v === undefined) { return null; }
+          var t = String(v).trim().replace(/\s+/g, " ");
+          if (NA_TOKENS.has(t.toLowerCase())) { return null; }
+          if (rule.case === "upper") { return t.toUpperCase(); }
+          if (rule.case === "lower") { return t.toLowerCase(); }
+          if (rule.case === "title") { return titleCase(t); }
+          return t;
+        }), coerced: [] };
+      }
+      function toNumberCol(values, integer) {
+        var out = [], coerced = [];
+        values.forEach(function (v, i) {
+          if (isMissing(v)) { out.push(null); return; }
+          var n = null;
+          if (typeof v === "boolean") { n = null; }
+          else if (typeof v === "number") { n = v; }
+          else if (typeof v === "string") { n = parseNumber(v); }
+          if (n === null || (integer && !Number.isInteger(n))) { coerced.push(i); out.push(null); } else { out.push(n); }
+        });
+        return { values: out, coerced: coerced };
+      }
+      function toDateCol(values, currentYear) {
+        var out = [], coerced = [];
+        values.forEach(function (v, i) {
+          if (isMissing(v)) { out.push(null); return; }
+          var d = parseDate(v, currentYear);
+          if (d === null) { coerced.push(i); }
+          out.push(d);
+        });
+        return { values: out, coerced: coerced };
+      }
+      function toBoolCol(values) {
+        var out = [], coerced = [];
+        values.forEach(function (v, i) {
+          if (isMissing(v)) { out.push(null); return; }
+          var t = String(v).trim().toLowerCase();
+          if (TRUE_TOKENS.has(t)) { out.push(true); } else if (FALSE_TOKENS.has(t)) { out.push(false); } else { coerced.push(i); out.push(null); }
+        });
+        return { values: out, coerced: coerced };
+      }
+      function convert(values, rule, currentYear) {
+        if (rule.dtype === "string") { return toStringCol(values, rule); }
+        if (rule.dtype === "int") { return toNumberCol(values, true); }
+        if (rule.dtype === "float") { return toNumberCol(values, false); }
+        if (rule.dtype === "date") { return toDateCol(values, currentYear); }
+        return toBoolCol(values);
+      }
+
+      // table: { columns: string[], rows: any[][] }; schema: ColumnRule[] {name,dtype,required,key,case,aliases}
+      function clean(table, schema, options) {
+        var currentYear = (options && options.currentYear) || new Date().getFullYear();
+        var names = schema.map(function (r) { return r.name; });
+        if (new Set(names).size !== names.length) { throw SchemaError("Nombres de columna duplicados en el esquema"); }
+
+        var lookup = new Map();
+        schema.forEach(function (rule) {
+          [rule.name].concat(rule.aliases || []).forEach(function (label) {
+            var k = toSnakeCase(label); if (!lookup.has(k)) { lookup.set(k, rule.name); }
+          });
+        });
+        var mapping = table.columns.map(function (c) { return { source: c, target: lookup.has(toSnakeCase(c)) ? lookup.get(toSnakeCase(c)) : null }; });
+        var targets = mapping.filter(function (m) { return m.target !== null; }).map(function (m) { return m.target; });
+        var dup = targets.filter(function (t, i) { return targets.indexOf(t) !== i; });
+        dup = dup.filter(function (t, i) { return dup.indexOf(t) === i; }).sort();
+        if (dup.length) { throw SchemaError("Varias columnas de origen mapean a: " + dup.join(", ")); }
+        var present = new Set(table.columns.map(function (c, i) { return mapping[i].target !== null ? mapping[i].target : c; }));
+        var missing = schema.filter(function (r) { return r.required && !present.has(r.name); }).map(function (r) { return r.name; });
+        if (missing.length) { throw SchemaError("Faltan columnas obligatorias: " + missing.join(", ")); }
+
+        var report = { rows_in: table.rows.length, rows_out: 0, dropped_null_required: 0, dropped_duplicates: 0, coerced_to_na: {} };
+        var converted = schema.map(function (rule) {
+          var idx = mapping.findIndex(function (m) { return m.target === rule.name; });
+          var raw = table.rows.map(function (row) { return idx >= 0 && idx < row.length ? row[idx] : null; });
+          var res = convert(raw, rule, currentYear);
+          if (res.coerced.length) { report.coerced_to_na[rule.name] = res.coerced.length; }
+          return res;
+        });
+
+        var keep = table.rows.map(function (_, i) { return i; });
+        var requiredIdx = schema.map(function (r, i) { return r.required ? i : -1; }).filter(function (i) { return i >= 0; });
+        if (requiredIdx.length) {
+          var before = keep.length;
+          keep = keep.filter(function (i) { return requiredIdx.every(function (c) { return converted[c].values[i] !== null; }); });
+          report.dropped_null_required = before - keep.length;
+        }
+        var keyIdx = schema.map(function (r, i) { return r.key ? i : -1; }).filter(function (i) { return i >= 0; });
+        if (!keyIdx.length) { keyIdx = schema.map(function (_, i) { return i; }); }
+        var seen = new Set(), before2 = keep.length;
+        keep = keep.filter(function (i) {
+          var k = JSON.stringify(keyIdx.map(function (c) { return converted[c].values[i]; }));
+          if (seen.has(k)) { return false; }
+          seen.add(k); return true;
+        });
+        report.dropped_duplicates = before2 - keep.length;
+        report.rows_out = keep.length;
+
+        return {
+          columns: names, dtypes: schema.map(function (r) { return DTYPE_LABEL[r.dtype]; }), mapping: mapping, report: report,
+          rows: keep.map(function (i) { return converted.map(function (c) { return c.values[i]; }); }),
+          srcIndex: keep,
+          coercedCells: converted.map(function (c) { return new Set(c.coerced); })
+        };
+      }
+
+      return { clean: clean, parseNumber: parseNumber, toSnakeCase: toSnakeCase, parseDate: parseDate };
+    })();
+    // ENGINE-END
+
+    (function () {
+      "use strict";
+      var MAX_ROWS = 2000, SHOW_ROWS = 200;
+      var SAMPLE_CSV = [
+        'ID,Nombre Completo,Monto (Bs),Fecha,Activo,Observaciones',
+        '1,  juan   pérez ,"Bs. 1.234,56",15/03/2025,Sí,ok',
+        '2,MARÍA lópez,"1,234.56",2025-03-15,no,ok',
+        '3,N/A,$25,5-4-25,si,sin nombre',
+        '4,carlos o\'neil,abc,31/02/2025,maybe,datos malos',
+        '2,duplicada maría,10,01/01/2024,1,mismo ID',
+        '3.5,ana,"1.234",x,falso,ID no entero',
+        '2.0,luis,,,,mismo ID (2.0)',
+        ',sin id,5,01/01/2024,true,sin ID',
+        '7,-,-,S/D,N/D,nulos disfrazados',
+        '8,rosa díaz,"Bs. 15.000,00",20.06.2025,verdadero,ok'
+      ].join("\n");
+      var SAMPLE_SCHEMA = [
+        { name: "id", dtype: "int", required: true, key: true, case: "keep", aliases: [] },
+        { name: "name", dtype: "string", required: true, key: false, case: "title", aliases: ["Nombre Completo"] },
+        { name: "amount", dtype: "float", required: false, key: false, case: "keep", aliases: ["Monto (Bs)"] },
+        { name: "date", dtype: "date", required: false, key: false, case: "keep", aliases: ["Fecha"] },
+        { name: "active", dtype: "bool", required: false, key: false, case: "keep", aliases: ["Activo"] }
+      ];
+      var I18N = {
+        es: { title: "Limpiador de datos", privacy: "Datos ficticios de ejemplo. Lo que pegues se procesa solo en tu navegador: nada se envía ni se guarda. No pegues datos reales o sensibles.",
+              hraw: "1 · Datos crudos (CSV: coma, punto y coma o tabulador)", hschema: "2 · Esquema de la tabla destino", hres: "3 · Resultado",
+              sample: "Cargar ejemplo", add: "+ Columna", reset: "Restablecer esquema", cols: ["Columna", "Tipo", "Obligatoria", "Clave", "Mayúsculas", "Alias (separados por ;)", ""],
+              cases: { keep: "mantener", upper: "MAYÚSC.", lower: "minúsc.", title: "Título" }, remove: "Quitar", badName: "Nombre de columna inválido (usa a-z, 0-9 y _): ",
+              rowsIn: "Filas de entrada", rowsOut: "Filas de salida", dropReq: "Descartadas por nulos obligatorios", dropDup: "Descartadas por duplicado", coerced: "Valores no convertibles → NA",
+              mapping: "Mapeo de columnas", discarded: "descartada", truncated: "Mostrando las primeras {n} filas.", none: "Sin filas de salida.", empty: "Pega datos CSV para empezar.", tooMany: "Se procesan solo las primeras {n} filas.",
+              errors: { "Nombres de columna duplicados en el esquema": "Nombres de columna duplicados en el esquema", prefixMap: "Varias columnas de origen mapean a: ", prefixReq: "Faltan columnas obligatorias: " },
+              note: "Port a JavaScript del pipeline de ssot-data-normalizer (cleaner.py): nombres snake_case con alias, nulos disfrazados, tipos estrictos, obligatorias y deduplicación por clave. Fechas soportadas en la demo: ISO (AAAA-MM-DD) y D/M/A con / . -; los meses en texto no se interpretan. La versión Python usa pandas y admite más formatos." },
+        en: { title: "Data cleaner", privacy: "Fictional sample data. Whatever you paste is processed only in your browser: nothing is sent or stored. Do not paste real or sensitive data.",
+              hraw: "1 · Raw data (CSV: comma, semicolon or tab)", hschema: "2 · Target table schema", hres: "3 · Result",
+              sample: "Load sample", add: "+ Column", reset: "Reset schema", cols: ["Column", "Type", "Required", "Key", "Case", "Aliases (separated by ;)", ""],
+              cases: { keep: "keep", upper: "UPPER", lower: "lower", title: "Title" }, remove: "Remove", badName: "Invalid column name (use a-z, 0-9 and _): ",
+              rowsIn: "Input rows", rowsOut: "Output rows", dropReq: "Dropped for required nulls", dropDup: "Dropped as duplicates", coerced: "Unconvertible values → NA",
+              mapping: "Column mapping", discarded: "discarded", truncated: "Showing the first {n} rows.", none: "No output rows.", empty: "Paste CSV data to start.", tooMany: "Only the first {n} rows are processed.",
+              errors: { "Nombres de columna duplicados en el esquema": "Duplicate column names in the schema", prefixMap: "Several source columns map to: ", prefixReq: "Missing required columns: " },
+              note: "JavaScript port of the ssot-data-normalizer pipeline (cleaner.py): snake_case names with aliases, disguised nulls, strict types, required columns and key-based deduplication. Dates supported in the demo: ISO (YYYY-MM-DD) and D/M/Y with / . -; month names are not interpreted. The Python version uses pandas and accepts more formats." }
+      };
+      var DTYPES = ["string", "int", "float", "date", "bool"];
+      var $ = function (id) { return document.getElementById(id); };
+      var state = { lang: "es", schema: JSON.parse(JSON.stringify(SAMPLE_SCHEMA)) };
+      try {
+        var saved = localStorage.getItem("jw-ssot-lang");
+        if (saved && I18N[saved]) { state.lang = saved; }
+        else if (navigator.language && navigator.language.slice(0, 2) === "en") { state.lang = "en"; }
+      } catch (e) { /* almacenamiento no disponible (iframe sandbox) */ }
+
+      function node(tag, text, cls) { var n = document.createElement(tag); if (text !== undefined) { n.textContent = text; } if (cls) { n.className = cls; } return n; }
+      function clear(el) { el.textContent = ""; }
+
+      function parseCsv(text) {
+        text = text.replace(/^﻿/, "");
+        var firstLine = text.split(/\r?\n/, 1)[0] || "";
+        var delim = [",", ";", "\t"].map(function (d) { return [d, firstLine.split(d).length]; }).sort(function (a, b) { return b[1] - a[1]; })[0][0];
+        var rows = [], row = [], field = "", quoted = false;
+        for (var i = 0; i < text.length; i++) {
+          var c = text[i];
+          if (quoted) {
+            if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else { quoted = false; } } else { field += c; }
+          } else if (c === '"') { quoted = true; }
+          else if (c === delim) { row.push(field); field = ""; }
+          else if (c === "\n" || c === "\r") {
+            if (c === "\r" && text[i + 1] === "\n") { i++; }
+            row.push(field); field = ""; rows.push(row); row = [];
+          } else { field += c; }
+        }
+        if (field !== "" || row.length) { row.push(field); rows.push(row); }
+        rows = rows.filter(function (r) { return !(r.length === 1 && r[0].trim() === ""); });
+        return { columns: (rows.shift() || []).map(function (c) { return c.trim(); }), rows: rows };
+      }
+
+      function renderSchema() {
+        var d = I18N[state.lang], t = $("schema"); clear(t);
+        var head = document.createElement("tr"); d.cols.forEach(function (c) { head.appendChild(node("th", c)); }); t.appendChild(head);
+        state.schema.forEach(function (rule, i) {
+          var tr = document.createElement("tr");
+          function cell(child) { var td = document.createElement("td"); td.appendChild(child); tr.appendChild(td); }
+          var name = node("input"); name.type = "text"; name.value = rule.name; name.setAttribute("aria-label", d.cols[0] + " " + (i + 1));
+          name.addEventListener("input", function () { rule.name = name.value.trim(); renderResult(); });
+          cell(name);
+          var dt = node("select"); DTYPES.forEach(function (x) { var o = node("option", x); o.value = x; dt.appendChild(o); }); dt.value = rule.dtype;
+          dt.setAttribute("aria-label", d.cols[1] + " " + (i + 1));
+          dt.addEventListener("change", function () { rule.dtype = dt.value; cs.disabled = rule.dtype !== "string"; renderResult(); });
+          cell(dt);
+          [["required", 2], ["key", 3]].forEach(function (p) {
+            var cb = node("input"); cb.type = "checkbox"; cb.checked = !!rule[p[0]]; cb.setAttribute("aria-label", d.cols[p[1]] + " " + (i + 1));
+            cb.addEventListener("change", function () { rule[p[0]] = cb.checked; renderResult(); }); cell(cb);
+          });
+          var cs = node("select"); Object.keys(d.cases).forEach(function (k) { var o = node("option", d.cases[k]); o.value = k; cs.appendChild(o); });
+          cs.value = rule.case; cs.disabled = rule.dtype !== "string"; cs.setAttribute("aria-label", d.cols[4] + " " + (i + 1));
+          cs.addEventListener("change", function () { rule.case = cs.value; renderResult(); }); cell(cs);
+          var al = node("input"); al.type = "text"; al.value = rule.aliases.join("; "); al.setAttribute("aria-label", d.cols[5] + " " + (i + 1));
+          al.addEventListener("input", function () { rule.aliases = al.value.split(";").map(function (s) { return s.trim(); }).filter(Boolean); renderResult(); });
+          cell(al);
+          var rm = node("button", "✕"); rm.type = "button"; rm.title = d.remove; rm.setAttribute("aria-label", d.remove + " " + (i + 1));
+          rm.addEventListener("click", function () { state.schema.splice(i, 1); renderSchema(); renderResult(); }); cell(rm);
+          t.appendChild(tr);
+        });
+      }
+
+      function dataTable(columns, subs, rows, bad) {
+        var wrap = node("div", undefined, "scroll"), t = document.createElement("table"), head = document.createElement("tr");
+        columns.forEach(function (c, i) { var th = node("th", c); if (subs && subs[i]) { th.appendChild(node("small", subs[i])); } head.appendChild(th); });
+        t.appendChild(head);
+        rows.forEach(function (r, ri) {
+          var tr = document.createElement("tr");
+          columns.forEach(function (_, ci) {
+            var v = r[ci], isNA = v === null || v === undefined, td = node("td", isNA ? "NA" : String(v));
+            if (isNA) { td.className = bad && bad(ri, ci) ? "bad" : "na"; }
+            tr.appendChild(td);
+          });
+          t.appendChild(tr);
+        });
+        wrap.appendChild(t);
+        return wrap;
+      }
+
+      function renderResult() {
+        var d = I18N[state.lang], out = $("out"); clear(out);
+        var table = parseCsv($("raw").value);
+        if (!table.columns.length) { out.appendChild(node("p", d.empty, "note")); return; }
+        if (table.rows.length > MAX_ROWS) { table.rows = table.rows.slice(0, MAX_ROWS); out.appendChild(node("p", d.tooMany.replace("{n}", MAX_ROWS), "note")); }
+        var bad = state.schema.filter(function (r) { return !/^[a-z][a-z0-9_]*$/.test(r.name); })[0];
+        if (bad) { out.appendChild(node("div", d.badName + (bad.name || "∅"), "err")); return; }
+
+        var res;
+        try { res = ENGINE.clean(table, state.schema); }
+        catch (e) {
+          if (e.name !== "SchemaError") { throw e; }
+          var m = e.message, text = d.errors[m] || (m.indexOf("Varias columnas") === 0 ? d.errors.prefixMap + m.split(": ")[1] : m.indexOf("Faltan columnas") === 0 ? d.errors.prefixReq + m.split(": ")[1] : m);
+          out.appendChild(node("div", text, "err")); return;
+        }
+        var r = res.report, kp = node("div", undefined, "kpis");
+        [[d.rowsIn, r.rows_in], [d.rowsOut, r.rows_out], [d.dropReq, r.dropped_null_required], [d.dropDup, r.dropped_duplicates]].forEach(function (k) {
+          var c = node("div", undefined, "card"); c.appendChild(node("div", k[0], "k")); c.appendChild(node("div", String(k[1]), "v")); kp.appendChild(c);
+        });
+        var co = Object.keys(r.coerced_to_na);
+        var cc = node("div", undefined, "card"); cc.appendChild(node("div", d.coerced, "k"));
+        cc.appendChild(node("div", co.length ? co.map(function (k) { return k + ": " + r.coerced_to_na[k]; }).join(" · ") : "0", "v"));
+        kp.appendChild(cc); out.appendChild(kp);
+
+        var mp = node("p", undefined, "map"); mp.appendChild(node("b", d.mapping + ": "));
+        mp.appendChild(document.createTextNode(res.mapping.map(function (x) { return x.source + " → " + (x.target || "(" + d.discarded + ")"); }).join(" · ")));
+        out.appendChild(mp);
+
+        if (!res.rows.length) { out.appendChild(node("p", d.none, "note")); return; }
+        var shown = res.rows.slice(0, SHOW_ROWS);
+        out.appendChild(dataTable(res.columns, res.dtypes, shown, function (ri, ci) { return res.coercedCells[ci].has(res.srcIndex[ri]); }));
+        if (res.rows.length > SHOW_ROWS) { out.appendChild(node("p", d.truncated.replace("{n}", SHOW_ROWS), "note")); }
+      }
+
+      function renderStatic() {
+        var d = I18N[state.lang];
+        document.documentElement.lang = state.lang; $("lang").value = state.lang;
+        $("title").textContent = d.title; $("privacy").textContent = d.privacy; $("h-raw").textContent = d.hraw; $("h-schema").textContent = d.hschema; $("h-res").textContent = d.hres;
+        $("btnSample").textContent = d.sample; $("btnAdd").textContent = d.add; $("btnReset").textContent = d.reset; $("note").textContent = d.note;
+        renderSchema(); renderResult();
+      }
+
+      $("raw").addEventListener("input", renderResult);
+      $("btnSample").addEventListener("click", function () { $("raw").value = SAMPLE_CSV; renderResult(); });
+      $("btnAdd").addEventListener("click", function () {
+        var n = 1; while (state.schema.some(function (r) { return r.name === "col_" + n; })) { n++; }
+        state.schema.push({ name: "col_" + n, dtype: "string", required: false, key: false, case: "keep", aliases: [] });
+        renderSchema(); renderResult();
+      });
+      $("btnReset").addEventListener("click", function () { state.schema = JSON.parse(JSON.stringify(SAMPLE_SCHEMA)); renderSchema(); renderResult(); });
+      $("lang").addEventListener("change", function (e) {
+        state.lang = I18N[e.target.value] ? e.target.value : "es";
+        try { localStorage.setItem("jw-ssot-lang", state.lang); } catch (err) { /* ignorar */ }
+        renderStatic();
+      });
+      $("raw").value = SAMPLE_CSV;
+      renderStatic();
+    })();
+  </script>
+</body>
+</html>

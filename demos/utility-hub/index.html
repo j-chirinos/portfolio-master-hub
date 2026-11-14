@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>JW Utility Hub</title>
+  <style>
+    :root { --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8; --blue:#38bdf8; --green:#4ade80; --red:#f87171; --amber:#fbbf24; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 24px 16px 48px; }
+    .wrap { width: min(980px, 100%); margin-inline: auto; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+    h1 { font-size: 1.6rem; }
+    h1 span { color: var(--blue); }
+    label.lang { color: var(--muted); font-size: .9rem; }
+    select, textarea, button { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+    select { padding: 6px 10px; }
+    textarea { width: 100%; min-height: 200px; padding: 12px; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: .9rem; }
+    textarea:focus, select:focus, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .panes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    .tools button { padding: 8px 14px; cursor: pointer; transition: border-color .15s; }
+    .tools button:hover { border-color: var(--blue); }
+    .tools button[aria-pressed="true"] { background: var(--blue); color: var(--bg); border-color: var(--blue); font-weight: 600; }
+    .run { background: var(--green) !important; color: var(--bg) !important; border-color: var(--green) !important; font-weight: 700; padding: 10px 24px; cursor: pointer; }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    #status { color: var(--muted); font-size: .92rem; }
+    #status.err { color: var(--red); }
+    #status.ok { color: var(--green); }
+    #status.warn { color: var(--amber); }
+    h2 { font-size: .9rem; color: var(--muted); font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+    .opt { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>JW <span id="title">Centro de Utilidades</span></h1>
+      <label class="lang">🌐 <select id="lang" aria-label="Idioma / Language">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+      </select></label>
+    </header>
+
+    <div class="tools" id="tools" role="group" aria-label="Herramientas"></div>
+
+    <div class="row">
+      <button type="button" class="run" id="run">▶ Ejecutar</button>
+      <span id="status" role="status" aria-live="polite"></span>
+    </div>
+
+    <div class="panes">
+      <div><h2 id="in-label">Entrada</h2><textarea id="input" spellcheck="false" aria-labelledby="in-label"></textarea></div>
+      <div><h2 id="out-label">Salida</h2><textarea id="output" spellcheck="false" readonly aria-labelledby="out-label"></textarea></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var I18N = {
+        es: { title: "Centro de Utilidades", run: "▶ Ejecutar", input: "Entrada", output: "Salida", ok: "Listo", empty: "La entrada está vacía", error: "Error: ",
+              json_format: "Formatear JSON", json_sort: "Formatear + ordenar claves", json_minify: "Minificar JSON", whitespace: "Normalizar espacios",
+              b64_enc: "Base64 codificar", b64_dec: "Base64 decodificar", url_enc: "URL codificar", url_dec: "URL decodificar", sha256: "Hash SHA-256",
+              validate: "Validar",
+              v_json: "JSON", v_uuid: "UUID", v_b64: "Base64", v_locale: "Locale (BCP-47)", v_yes: "✓ válido", v_no: "✗ no válido",
+              v_at: "línea {l}, columna {c}",
+              bigint: "Aviso: hay enteros de más de 15 dígitos; JavaScript puede perder precisión (Python no).",
+              sha_ctx: "SHA-256 requiere contexto seguro (localhost / https / file)" },
+        en: { title: "Utility Hub", run: "▶ Run", input: "Input", output: "Output", ok: "Done", empty: "Input is empty", error: "Error: ",
+              json_format: "Format JSON", json_sort: "Format + sort keys", json_minify: "Minify JSON", whitespace: "Normalize whitespace",
+              b64_enc: "Base64 encode", b64_dec: "Base64 decode", url_enc: "URL encode", url_dec: "URL decode", sha256: "SHA-256 hash",
+              validate: "Validate",
+              v_json: "JSON", v_uuid: "UUID", v_b64: "Base64", v_locale: "Locale (BCP-47)", v_yes: "✓ valid", v_no: "✗ not valid",
+              v_at: "line {l}, column {c}",
+              bigint: "Warning: integers over 15 digits found; JavaScript may lose precision (Python does not).",
+              sha_ctx: "SHA-256 requires a secure context (localhost / https / file)" }
+      };
+      var MAX_CHARS = 5000000;
+      var BIGINT_RE = /(?:^|[^\d.eE+\-"])-?\d{16,}(?![\d.eE])/;
+
+      function toBase64(text) {
+        var bytes = new TextEncoder().encode(text), bin = "";
+        for (var i = 0; i < bytes.length; i++) { bin += String.fromCharCode(bytes[i]); }
+        return btoa(bin);
+      }
+      function isBase64(text) {
+        var compact = text.replace(/\s+/g, "");
+        return compact.length > 0 && /^[A-Za-z0-9+/]*={0,2}$/.test(compact) && compact.length % 4 === 0;
+      }
+      function fromBase64(text) {
+        var compact = text.replace(/\s+/g, "");
+        if (!isBase64(compact)) { throw new Error("Base64"); }
+        var bin = atob(compact), bytes = new Uint8Array(bin.length);
+        for (var i = 0; i < bin.length; i++) { bytes[i] = bin.charCodeAt(i); }
+        return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      }
+
+      // Equivalente a str.expandtabs(n) de Python: alinea a tabuladores (no sustituye por n espacios fijos).
+      function expandTabs(line, n) {
+        var out = "", col = 0;
+        Array.from(line).forEach(function (ch) {
+          if (ch === "\t") { var pad = n - (col % n); out += new Array(pad + 1).join(" "); col += pad; }
+          else { out += ch; col++; }
+        });
+        return out;
+      }
+      function normalizeWs(code) {
+        var lines = code.replace(/\r\n?/g, "\n").split("\n"), out = [], blanks = 0;
+        lines.forEach(function (line) {
+          line = expandTabs(line, 4).replace(/\s+$/, "");
+          if (line) { blanks = 0; out.push(line); } else { blanks++; if (blanks <= 1) { out.push(line); } }
+        });
+        var text = out.join("\n").replace(/^\n+|\n+$/g, "");
+        return text ? text + "\n" : text;
+      }
+
+      function sortKeys(value) {
+        if (Array.isArray(value)) { return value.map(sortKeys); }
+        if (value && typeof value === "object") {
+          var sorted = {};
+          Object.keys(value).sort().forEach(function (k) { sorted[k] = sortKeys(value[k]); });
+          return sorted;
+        }
+        return value;
+      }
+
+      // Posición (línea/columna, base 1) de un error de JSON.parse; null si el motor no la informa.
+      // Escáner sintáctico mínimo: ubica el primer carácter inválido (los mensajes de V8 no siempre traen posición).
+      function scanJsonError(s) {
+        var i = 0, NUM = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
+        function fail() { throw i; }
+        function ws() { while (i < s.length && " \t\n\r".indexOf(s[i]) >= 0) { i++; } }
+        function str() {
+          i++;
+          while (i < s.length) {
+            var c = s[i];
+            if (c === '"') { i++; return; }
+            if (c === "\\") {
+              var n = s[i + 1];
+              if ('"\\/bfnrt'.indexOf(n) >= 0 && n !== undefined) { i += 2; }
+              else if (n === "u" && /^[0-9a-fA-F]{4}$/.test(s.substr(i + 2, 4))) { i += 6; }
+              else { i++; fail(); }
+            } else if (c < " ") { fail(); } else { i++; }
+          }
+          fail();
+        }
+        function val() {
+          ws();
+          var c = s[i];
+          if (c === "{") {
+            i++; ws();
+            if (s[i] === "}") { i++; return; }
+            for (;;) {
+              ws(); if (s[i] !== '"') { fail(); }
+              str(); ws(); if (s[i] !== ":") { fail(); }
+              i++; val(); ws();
+              if (s[i] === ",") { i++; continue; }
+              if (s[i] === "}") { i++; return; }
+              fail();
+            }
+          } else if (c === "[") {
+            i++; ws();
+            if (s[i] === "]") { i++; return; }
+            for (;;) {
+              val(); ws();
+              if (s[i] === ",") { i++; continue; }
+              if (s[i] === "]") { i++; return; }
+              fail();
+            }
+          } else if (c === '"') { str(); }
+          else {
+            var lit = ["true", "false", "null"].filter(function (w) { return s.substr(i, w.length) === w; })[0];
+            if (lit) { i += lit.length; return; }
+            NUM.lastIndex = i;
+            var m = NUM.exec(s);
+            if (!m) { fail(); }
+            i += m[0].length;
+          }
+        }
+        try { val(); ws(); if (i < s.length) { fail(); } return null; }
+        catch (e) {
+          if (typeof e !== "number") { return null; }
+          var before = s.slice(0, e).split("\n");
+          return { l: before.length, c: before[before.length - 1].length + 1 };
+        }
+      }
+
+      function jsonErrorPosition(text, message) {
+        var scanned = scanJsonError(text);
+        if (scanned) { return scanned; }
+        var m = /line (\d+) column (\d+)/.exec(message);
+        if (m) { return { l: +m[1], c: +m[2] }; }
+        m = /position (\d+)/.exec(message);
+        if (!m) { return null; }
+        var before = text.slice(0, +m[1]).split("\n");
+        return { l: before.length, c: before[before.length - 1].length + 1 };
+      }
+
+      function validateAll(text, d) {
+        var raw = text.trim(), lines = [];
+        try { JSON.parse(raw); lines.push(d.v_json + ": " + d.v_yes); }
+        catch (e) {
+          var pos = jsonErrorPosition(raw, String(e && e.message));
+          lines.push(d.v_json + ": " + d.v_no + (pos ? " (" + d.v_at.replace("{l}", pos.l).replace("{c}", pos.c) + ")" : ""));
+        }
+        var uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw);
+        lines.push(d.v_uuid + ": " + (uuid ? d.v_yes : d.v_no));
+        lines.push(d.v_b64 + ": " + (isBase64(raw) ? d.v_yes : d.v_no));
+        lines.push(d.v_locale + ": " + (/^[a-z]{2,3}(?:-[A-Z]{2})?$/.test(raw) ? d.v_yes : d.v_no));
+        return lines.join("\n");
+      }
+
+      function sha256(text, d) {
+        if (!window.crypto || !window.crypto.subtle) { return Promise.reject(new Error(d.sha_ctx)); }
+        return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(function (buf) {
+          return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+        });
+      }
+
+      var TOOLS = [
+        { id: "json_format", run: function (t) { return JSON.stringify(JSON.parse(t), null, 2); }, bigint: true },
+        { id: "json_sort", run: function (t) { return JSON.stringify(sortKeys(JSON.parse(t)), null, 2); }, bigint: true },
+        { id: "json_minify", run: function (t) { return JSON.stringify(JSON.parse(t)); }, bigint: true },
+        { id: "whitespace", run: normalizeWs },
+        { id: "b64_enc", run: toBase64 },
+        { id: "b64_dec", run: fromBase64 },
+        { id: "url_enc", run: encodeURIComponent },
+        { id: "url_dec", run: decodeURIComponent },
+        { id: "sha256", run: sha256 },
+        { id: "validate", run: validateAll }
+      ];
+
+      var $ = function (id) { return document.getElementById(id); };
+      var state = { lang: "es", tool: TOOLS[0].id };
+      try {
+        var saved = localStorage.getItem("jw-utility-lang");
+        if (saved && I18N[saved]) { state.lang = saved; }
+        else if (navigator.language && navigator.language.slice(0, 2) === "en") { state.lang = "en"; }
+      } catch (e) { /* almacenamiento no disponible (p. ej. iframe sandbox) */ }
+
+      function setStatus(msg, cls) { var s = $("status"); s.textContent = msg; s.className = cls || ""; }
+
+      function render() {
+        var d = I18N[state.lang];
+        document.documentElement.lang = state.lang;
+        $("lang").value = state.lang;
+        $("title").textContent = d.title;
+        $("run").textContent = d.run;
+        $("in-label").textContent = d.input;
+        $("out-label").textContent = d.output;
+        var box = $("tools");
+        box.textContent = "";
+        TOOLS.forEach(function (tool) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = d[tool.id];
+          b.setAttribute("aria-pressed", String(tool.id === state.tool));
+          b.addEventListener("click", function () { state.tool = tool.id; render(); });
+          box.appendChild(b);
+        });
+      }
+
+      function run() {
+        var d = I18N[state.lang], text = $("input").value;
+        if (!text.trim()) { setStatus(d.empty, "err"); return; }
+        if (text.length > MAX_CHARS) { setStatus(d.error + "> " + MAX_CHARS, "err"); return; }
+        var tool = TOOLS.filter(function (t) { return t.id === state.tool; })[0];
+        Promise.resolve().then(function () { return tool.run(text, d); }).then(function (result) {
+          $("output").value = result;
+          if (tool.bigint && BIGINT_RE.test(text)) { setStatus(d.bigint, "warn"); }
+          else { setStatus(d.ok, "ok"); }
+        }).catch(function (err) {
+          $("output").value = "";
+          setStatus(d.error + (err && err.message ? err.message : String(err)), "err");
+        });
+      }
+
+      $("run").addEventListener("click", run);
+      $("lang").addEventListener("change", function (e) {
+        state.lang = I18N[e.target.value] ? e.target.value : "es";
+        try { localStorage.setItem("jw-utility-lang", state.lang); } catch (err) { /* ignorar */ }
+        render();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

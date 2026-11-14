@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>SeguBot Receipt Validator</title>
+  <style>
+    :root { --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8; --blue:#38bdf8; --green:#4ade80; --red:#f87171; --amber:#fbbf24; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px 16px 40px; }
+    .wrap { width: min(980px, 100%); margin-inline: auto; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    h1 { font-size: 1.5rem; } h1 span { color: var(--blue); }
+    select, textarea, button { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 8px; }
+    select { padding: 6px 10px; }
+    select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .privacy { background: rgba(74,222,128,.08); border: 1px solid var(--green); color: var(--green); border-radius: 8px; padding: 8px 12px; font-size: .88rem; margin-bottom: 14px; }
+    .pipeline { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; font-size: .82rem; }
+    .step { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; color: var(--muted); }
+    .step.live { border-color: var(--green); color: var(--text); }
+    .step b { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    .step.live b { color: var(--green); }
+    .samples { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .samples button { padding: 6px 12px; cursor: pointer; font-size: .88rem; }
+    .samples button:hover { border-color: var(--blue); }
+    .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    textarea { width: 100%; min-height: 210px; padding: 12px; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: .88rem; }
+    h2 { font-size: .85rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+    .card .k { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .card .v { font-size: 1.1rem; font-weight: 700; word-break: break-all; }
+    .card .v.none { color: var(--muted); font-weight: 400; }
+    .status { padding: 10px 12px; border-radius: 10px; font-weight: 700; margin-bottom: 10px; border: 1px solid; }
+    .status.ok { color: var(--green); border-color: var(--green); background: rgba(74,222,128,.08); }
+    .status.bad { color: var(--red); border-color: var(--red); background: rgba(248,113,113,.08); }
+    ul.errs { padding-left: 20px; color: var(--red); font-size: .9rem; margin-bottom: 10px; }
+    .reg { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 8px; }
+    .reg button { padding: 8px 14px; cursor: pointer; font-weight: 600; }
+    .reg button:disabled { opacity: .45; cursor: not-allowed; }
+    #regBtn:not(:disabled) { background: var(--green); color: var(--bg); border-color: var(--green); }
+    #regMsg { font-size: .9rem; color: var(--muted); }
+    #regMsg.err { color: var(--amber); } #regMsg.ok { color: var(--green); }
+    table { border-collapse: collapse; width: 100%; font-size: .82rem; margin-top: 8px; }
+    th, td { padding: 4px 6px; border: 1px solid var(--border); text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    .note { font-size: .8rem; color: var(--muted); margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>SeguBot <span id="title">Validador de comprobantes</span></h1>
+      <select id="lang" aria-label="Idioma / Language"><option value="es">Español</option><option value="en">English</option></select>
+    </header>
+    <p class="privacy" id="privacy" role="note"></p>
+    <div class="pipeline" id="pipeline" aria-label="Pipeline"></div>
+
+    <div class="samples" id="samples"></div>
+    <div class="cols">
+      <div>
+        <h2 id="h-in"></h2>
+        <textarea id="input" spellcheck="false" maxlength="20000" aria-labelledby="h-in"></textarea>
+      </div>
+      <div>
+        <h2 id="h-out"></h2>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <ul class="errs" id="errs"></ul>
+        <div class="grid" id="fields"></div>
+        <div class="reg"><button type="button" id="regBtn"></button><button type="button" id="clearBtn"></button><span id="regMsg" role="status" aria-live="polite"></span></div>
+      </div>
+    </div>
+    <h2 id="h-reg" style="margin-top:18px"></h2>
+    <table id="registry"></table>
+    <p class="note" id="note"></p>
+  </div>
+
+  <script>
+    // ENGINE-START (port de src/validator.py del repo segubot-ocr-agent; mantener alineado con fixtures.json)
+    var ENGINE = (function () {
+      var NUM = String.raw`\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?`;
+      var CURRENCY = String.raw`(?:Bs\.?\s?[SsDd]?\.?|VES|VEF|USD|US\$|\$)`;
+      var AMOUNT_KEYWORD = new RegExp(String.raw`(?:monto|importe|total|valor)(?:\s+(?:transferido|pagado|a\s+pagar|total))?\s*[:\-]?\s*(?:${CURRENCY})?\s*(${NUM})`, "gi");
+      var AMOUNT_CURRENCY = new RegExp(String.raw`(?:${CURRENCY})\s*(${NUM})`, "gi");
+      var DATE_ISO = /(?<!\d)(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})(?!\d)/g;
+      var DATE_DMY = /(?<!\d)(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4}|\d{2})(?!\d)/g;
+      var REFERENCE = /(?:referencia|ref|operaci[oó]n|comprobante|confirmaci[oó]n)\b\.?\s*(?:n[o°º]?\.?|nro\.?|#)?[\s:#.\-]*(\d{4,20})/i;
+      var BANKS = [
+        ["Banesco", /banesco/i], ["Mercantil", /mercantil/i], ["Provincial", /provincial|bbva/i],
+        ["Banco de Venezuela", /banco\s+de\s+venezuela|\bbdv\b/i], ["BNC", /\bbnc\b|nacional\s+de\s+cr[eé]dito/i],
+        ["Bancamiga", /bancamiga/i], ["Bicentenario", /bicentenario/i], ["Banplus", /banplus/i],
+        ["Banco Exterior", /banco\s+exterior/i], ["Banco del Tesoro", /banco\s+del\s+tesoro/i],
+        ["Binance", /binance/i], ["Zelle", /zelle/i]
+      ];
+      var MESSAGES = {
+        amount: "Monto no detectado o inválido", date: "Fecha no detectada o inválida",
+        future: "La fecha es futura", reference: "Número de referencia no detectado"
+      };
+
+      function count(s, ch) { return s.split(ch).length - 1; }
+
+      // Devuelve el monto como cadena decimal (equivale a str(Decimal)); null si es inválido. Sin floats.
+      function parseAmountString(raw) {
+        var c = raw.trim();
+        if (!c) { return null; }
+        var dot = count(c, "."), comma = count(c, ","), dec = null;
+        if (dot && comma) { dec = c.lastIndexOf(".") > c.lastIndexOf(",") ? "." : ","; }
+        else if (dot || comma) {
+          var sep = dot ? "." : ",", tail = c.slice(c.lastIndexOf(sep) + 1);
+          dec = (Math.max(dot, comma) === 1 && tail.length !== 3) ? sep : null;
+        }
+        var normalized;
+        if (dec) {
+          var at = c.lastIndexOf(dec);
+          normalized = c.slice(0, at).replace(/[.,]/g, "") + "." + c.slice(at + 1);
+        } else { normalized = c.replace(/[.,]/g, ""); }
+        if (!/^(?:\d+\.?\d*|\.\d+)$/.test(normalized)) { return null; }
+        var parts = normalized.split("."), ip = parts[0].replace(/^0+/, "") || "0", fp = parts[1] || "";
+        return fp ? ip + "." + fp : ip;
+      }
+
+      function extractAmount(text) {
+        var regexes = [AMOUNT_KEYWORD, AMOUNT_CURRENCY];
+        for (var r = 0; r < regexes.length; r++) {
+          var matches = Array.from(text.matchAll(regexes[r]));
+          for (var i = 0; i < matches.length; i++) {
+            var value = parseAmountString(matches[i][1]);
+            if (value !== null && /[1-9]/.test(value)) { return value; }
+          }
+        }
+        return null;
+      }
+
+      function safeDate(y, m, d) {
+        if (y < 1 || y > 9999 || m < 1 || m > 12 || d < 1) { return null; }
+        var dt = new Date(0);
+        dt.setUTCFullYear(y, m - 1, d);
+        if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) { return null; }
+        return { y: y, m: m, d: d };
+      }
+
+      function extractDate(text) {
+        var iso = Array.from(text.matchAll(DATE_ISO)), i, p;
+        for (i = 0; i < iso.length; i++) { p = safeDate(+iso[i][1], +iso[i][2], +iso[i][3]); if (p) { return p; } }
+        var dmy = Array.from(text.matchAll(DATE_DMY));
+        for (i = 0; i < dmy.length; i++) {
+          var year = +dmy[i][3]; if (year < 100) { year += 2000; }
+          p = safeDate(year, +dmy[i][2], +dmy[i][1]);
+          if (p) { return p; }
+        }
+        return null;
+      }
+
+      function extractReference(text) { var m = REFERENCE.exec(text); return m ? m[1] : null; }
+      function extractBank(text) {
+        for (var i = 0; i < BANKS.length; i++) { if (BANKS[i][1].test(text)) { return BANKS[i][0]; } }
+        return null;
+      }
+
+      function pad(n, w) { var s = String(n); while (s.length < w) { s = "0" + s; } return s; }
+      function isoDate(p) { return pad(p.y, 4) + "-" + pad(p.m, 2) + "-" + pad(p.d, 2); }
+      function isFuture(p, today) {
+        return p.y !== today.y ? p.y > today.y : (p.m !== today.m ? p.m > today.m : p.d > today.d);
+      }
+      function localToday() { var n = new Date(); return { y: n.getFullYear(), m: n.getMonth() + 1, d: n.getDate() }; }
+
+      function validateReceipt(text, today) {
+        today = today || localToday();
+        var amount = extractAmount(text), date = extractDate(text), reference = extractReference(text), bank = extractBank(text);
+        var codes = [];
+        if (amount === null) { codes.push("amount"); }
+        if (date === null) { codes.push("date"); } else if (isFuture(date, today)) { codes.push("future"); }
+        if (reference === null) { codes.push("reference"); }
+        return {
+          amount: amount, date: date ? isoDate(date) : null, reference: reference, bank: bank,
+          is_valid: codes.length === 0, errors: codes.map(function (c) { return MESSAGES[c]; }), errorCodes: codes
+        };
+      }
+
+      return { parseAmountString: parseAmountString, extractAmount: extractAmount, extractDate: extractDate, extractReference: extractReference, extractBank: extractBank, validateReceipt: validateReceipt };
+    })();
+    // ENGINE-END
+
+    (function () {
+      "use strict";
+      var MAX_CHARS = 20000;
+      var SAMPLES = [
+        { id: "banesco", es: "Banesco · Pago móvil", en: "Banesco · Mobile payment", text: "BANESCO\nPago Móvil exitoso\nFecha: 12/09/2025\nMonto: Bs. 2.450,00\nNro. de Referencia: 004821937" },
+        { id: "mercantil", es: "Mercantil · Transferencia", en: "Mercantil · Transfer", text: "Banco Mercantil C.A.\nComprobante de transferencia\n2025-08-30 16:41\nMonto transferido: 1,280.50\nOperación #7730018845" },
+        { id: "zelle", es: "Zelle · USD", en: "Zelle · USD", text: "Zelle\nYou sent $ 85.00\nDate 03-10-2025\nConfirmación: 5588120934" },
+        { id: "bad", es: "Ilegible (con errores)", en: "Unreadable (with errors)", text: "COMPROBANTE\nFecha: 31/02/2025\nMonto: --\nsin numero" },
+        { id: "future", es: "Fecha futura", en: "Future date", text: "Banco de Venezuela\nFecha: 01/01/2999\nMonto: Bs 500\nRef: 123456" }
+      ];
+      var I18N = {
+        es: { title: "Validador de comprobantes", privacy: "Comprobantes ficticios de ejemplo. Lo que escribas aquí se procesa solo en tu navegador: nada se envía ni se guarda. No pegues datos reales.",
+              steps: [["Imagen", "comprobante", false], ["OCR", "Tesseract / EasyOCR · no corre en la demo: pega su texto", false], ["Validador", "Regex · corre aquí", true], ["Drive + Sheets", "simulado en memoria", true]],
+              in: "Texto extraído por OCR", out: "Resultado de la validación", ok: "✓ Comprobante válido", bad: "✗ Comprobante no válido",
+              amount: "Monto", date: "Fecha", reference: "Referencia", bank: "Banco", none: "no detectado",
+              codes: { amount: "Monto no detectado o inválido", date: "Fecha no detectada o inválida", future: "La fecha es futura", reference: "Número de referencia no detectado" },
+              reg: "Registrar (simula Drive + Sheets)", clear: "Vaciar registro", regDone: "Registrado ✓", regDup: "Duplicado: la referencia ya existe (HTTP 409)", regInvalid: "No se registra: el comprobante no es válido",
+              hreg: "Registro simulado (memoria del navegador)", cols: ["Fecha", "Monto", "Referencia", "Banco", "Estado"], empty: "Sin registros", valid: "VALIDADO",
+              note: "El validador es un port a JavaScript de src/validator.py (montos VE 1.234,56 y US 1,234.56, fechas ISO y latinas, referencia de 4–20 dígitos, 12 bancos). En el servicio real, la imagen pasa antes por OpenCV + Tesseract/EasyOCR y el registro va a Google Drive y Sheets." },
+        en: { title: "Receipt validator", privacy: "Fictional sample receipts. Whatever you type here is processed only in your browser: nothing is sent or stored. Do not paste real data.",
+              steps: [["Image", "receipt", false], ["OCR", "Tesseract / EasyOCR · not run in the demo: paste its text", false], ["Validator", "Regex · runs here", true], ["Drive + Sheets", "simulated in memory", true]],
+              in: "OCR-extracted text", out: "Validation result", ok: "✓ Valid receipt", bad: "✗ Invalid receipt",
+              amount: "Amount", date: "Date", reference: "Reference", bank: "Bank", none: "not detected",
+              codes: { amount: "Amount not detected or invalid", date: "Date not detected or invalid", future: "Date is in the future", reference: "Reference number not detected" },
+              reg: "Register (simulates Drive + Sheets)", clear: "Clear registry", regDone: "Registered ✓", regDup: "Duplicate: reference already exists (HTTP 409)", regInvalid: "Not registered: the receipt is not valid",
+              hreg: "Simulated registry (browser memory)", cols: ["Date", "Amount", "Reference", "Bank", "Status"], empty: "No records", valid: "VALIDATED",
+              note: "The validator is a JavaScript port of src/validator.py (VE 1.234,56 and US 1,234.56 amounts, ISO and Latin dates, 4–20 digit reference, 12 banks). In the real service the image first goes through OpenCV + Tesseract/EasyOCR and the record is stored in Google Drive and Sheets." }
+      };
+      var $ = function (id) { return document.getElementById(id); };
+      var state = { lang: "es", registry: [], last: null, msg: null };
+      try {
+        var saved = localStorage.getItem("jw-segubot-lang");
+        if (saved && I18N[saved]) { state.lang = saved; }
+        else if (navigator.language && navigator.language.slice(0, 2) === "en") { state.lang = "en"; }
+      } catch (e) { /* almacenamiento no disponible (iframe sandbox) */ }
+
+      function node(tag, text, cls) { var n = document.createElement(tag); if (text !== undefined) { n.textContent = text; } if (cls) { n.className = cls; } return n; }
+      function clear(el) { el.textContent = ""; }
+
+      function renderRegistry(d) {
+        var t = $("registry"); clear(t);
+        var head = document.createElement("tr"); d.cols.forEach(function (c) { head.appendChild(node("th", c)); }); t.appendChild(head);
+        if (!state.registry.length) {
+          var tr = document.createElement("tr"), td = node("td", d.empty); td.colSpan = d.cols.length; tr.appendChild(td); t.appendChild(tr); return;
+        }
+        state.registry.forEach(function (r) {
+          var tr = document.createElement("tr");
+          [r.date, r.amount, r.reference, r.bank || "—", d.valid].forEach(function (v) { tr.appendChild(node("td", v)); });
+          t.appendChild(tr);
+        });
+      }
+
+      function render() {
+        var d = I18N[state.lang], text = $("input").value;
+        document.documentElement.lang = state.lang; $("lang").value = state.lang;
+        $("title").textContent = d.title; $("privacy").textContent = d.privacy; $("h-in").textContent = d.in; $("h-out").textContent = d.out;
+        $("note").textContent = d.note; $("h-reg").textContent = d.hreg; $("regBtn").textContent = d.reg; $("clearBtn").textContent = d.clear;
+
+        var pl = $("pipeline"); clear(pl);
+        d.steps.forEach(function (s, i) {
+          var el = node("div", undefined, "step" + (s[2] ? " live" : "")); el.appendChild(node("b", (i + 1) + ". " + s[0])); el.appendChild(document.createTextNode(s[1])); pl.appendChild(el);
+        });
+        var sm = $("samples"); clear(sm);
+        SAMPLES.forEach(function (s) {
+          var b = node("button", s[state.lang]); b.type = "button";
+          b.addEventListener("click", function () { $("input").value = s.text; state.msg = null; render(); });
+          sm.appendChild(b);
+        });
+
+        var r = ENGINE.validateReceipt(text.slice(0, MAX_CHARS));
+        state.last = r;
+        var st = $("status"); st.textContent = r.is_valid ? d.ok : d.bad; st.className = "status " + (r.is_valid ? "ok" : "bad");
+        var errs = $("errs"); clear(errs);
+        r.errorCodes.forEach(function (c) { errs.appendChild(node("li", d.codes[c])); });
+        var f = $("fields"); clear(f);
+        [["amount", r.amount], ["date", r.date], ["reference", r.reference], ["bank", r.bank]].forEach(function (p) {
+          var c = node("div", undefined, "card"); c.appendChild(node("div", d[p[0]], "k"));
+          c.appendChild(node("div", p[1] === null ? d.none : p[1], "v" + (p[1] === null ? " none" : ""))); f.appendChild(c);
+        });
+        $("regBtn").disabled = !r.is_valid;
+        var msg = $("regMsg"); msg.textContent = state.msg ? d[state.msg.key] : ""; msg.className = state.msg ? state.msg.cls : "";
+        renderRegistry(d);
+      }
+
+      $("input").addEventListener("input", function () { state.msg = null; render(); });
+      $("regBtn").addEventListener("click", function () {
+        var r = state.last;
+        if (!r || !r.is_valid) { state.msg = { key: "regInvalid", cls: "err" }; }
+        else if (state.registry.some(function (x) { return x.reference === r.reference; })) { state.msg = { key: "regDup", cls: "err" }; }
+        else { state.registry.push({ date: r.date, amount: r.amount, reference: r.reference, bank: r.bank }); state.msg = { key: "regDone", cls: "ok" }; }
+        render();
+      });
+      $("clearBtn").addEventListener("click", function () { state.registry = []; state.msg = null; render(); });
+      $("lang").addEventListener("change", function (e) {
+        state.lang = I18N[e.target.value] ? e.target.value : "es";
+        try { localStorage.setItem("jw-segubot-lang", state.lang); } catch (err) { /* ignorar */ }
+        render();
+      });
+      $("input").value = SAMPLES[0].text;
+      render();
+    })();
+  </script>
+</body>
+</html>

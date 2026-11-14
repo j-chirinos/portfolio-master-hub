@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>V15 Sports Simulator</title>
+  <style>
+    :root { --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8; --blue:#38bdf8; --green:#4ade80; --red:#f87171; --amber:#fbbf24; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px 16px 40px; }
+    .wrap { width: min(980px, 100%); margin-inline: auto; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    h1 { font-size: 1.5rem; } h1 span { color: var(--blue); }
+    select, input { font: inherit; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+    select:focus, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .warn { background: rgba(251,191,36,.1); border: 1px solid var(--amber); color: var(--amber); border-radius: 8px; padding: 8px 12px; font-size: .88rem; margin-bottom: 16px; }
+    .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .controls label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .controls input[type="range"] { padding: 0; accent-color: var(--blue); }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+    .card .k { font-size: .76rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .card .v { font-size: 1.5rem; font-weight: 700; }
+    .card .d { font-size: .8rem; color: var(--muted); }
+    .bars { display: grid; gap: 10px; margin-bottom: 16px; }
+    .bar { display: grid; grid-template-columns: 120px 1fr 120px; gap: 10px; align-items: center; font-size: .9rem; }
+    .bar .track { background: var(--bg); border: 1px solid var(--border); border-radius: 999px; height: 16px; overflow: hidden; }
+    .bar .fill { height: 100%; background: var(--blue); }
+    .bar:nth-child(2) .fill { background: var(--muted); }
+    .bar:nth-child(3) .fill { background: var(--green); }
+    .bar .pct { text-align: right; font-variant-numeric: tabular-nums; }
+    .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    h2 { font-size: .85rem; color: var(--muted); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+    table { border-collapse: collapse; width: 100%; font-size: .85rem; font-variant-numeric: tabular-nums; }
+    th, td { padding: 4px 6px; text-align: center; border: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; }
+    .heat td { min-width: 32px; }
+    td.l, th.l { text-align: left; }
+    .note { font-size: .8rem; color: var(--muted); margin-top: 8px; }
+    @media (max-width: 520px) { .bar { grid-template-columns: 84px 1fr 64px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>V15 <span id="title">Simulador de partidos</span></h1>
+      <select id="lang" aria-label="Idioma / Language"><option value="es">Español</option><option value="en">English</option></select>
+    </header>
+    <p class="warn" id="warn" role="note"></p>
+
+    <div class="controls">
+      <label><span id="l-home"></span><select id="home"></select></label>
+      <label><span id="l-away"></span><select id="away"></select></label>
+      <label><span id="l-seed"></span><input id="seed" type="number" min="0" max="10000" value="42"></label>
+      <label><span id="l-sims"></span><input id="sims" type="range" min="1000" max="200000" step="1000" value="20000"><output id="simsOut"></output></label>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+    <div class="bars" id="bars"></div>
+
+    <div class="cols">
+      <div><h2 id="h-heat"></h2><table class="heat" id="heat"></table><p class="note" id="n-heat"></p></div>
+      <div>
+        <h2 id="h-top"></h2><table id="top"></table>
+        <h2 id="h-str" style="margin-top:16px"></h2><table id="str"></table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var DATA = {"matches":60,"mu_home":1.8666666666666667,"mu_away":1.2166666666666666,"teams":{"Equipo A":{"attack":1.4176904176904175,"defense":0.9459459459459459},"Equipo B":{"attack":1.1523341523341524,"defense":1.0049140049140048},"Equipo C":{"attack":1.0638820638820639,"defense":0.8574938574938575},"Equipo D":{"attack":0.8574938574938575,"defense":0.9459459459459459},"Equipo E":{"attack":0.4742014742014741,"defense":1.0343980343980343},"Equipo F":{"attack":1.0343980343980343,"defense":1.2113022113022112}}};
+
+    // ENGINE-START (port de src/engine/stochastic_model.py; mantener alineado con fixtures.json)
+    var ENGINE = (function () {
+      var MIN_EXPECTED_GOALS = 0.05, MIN_SIMULATIONS = 100, MAX_SIMULATIONS = 1000000;
+
+      function expectedGoals(model, home, away) {
+        if (!model.teams[home] || !model.teams[away]) { throw new Error("Equipo desconocido"); }
+        if (home === away) { throw new Error("Local y visitante deben ser distintos"); }
+        var h = model.teams[home], a = model.teams[away];
+        return [
+          Math.max(model.mu_home * h.attack * a.defense, MIN_EXPECTED_GOALS),
+          Math.max(model.mu_away * a.attack * h.defense, MIN_EXPECTED_GOALS)
+        ];
+      }
+
+      function poissonPmf(lam, maxGoals) {
+        var p = [Math.exp(-lam)];
+        for (var k = 1; k <= maxGoals; k++) { p.push(p[k - 1] * lam / k); }
+        return p;
+      }
+
+      function analytic(lamHome, lamAway, maxGoals) {
+        maxGoals = maxGoals || 15;
+        var ph = poissonPmf(lamHome, maxGoals), pa = poissonPmf(lamAway, maxGoals), total = 0, home = 0, draw = 0, away = 0;
+        for (var i = 0; i <= maxGoals; i++) {
+          for (var j = 0; j <= maxGoals; j++) {
+            var v = ph[i] * pa[j];
+            total += v;
+            if (i > j) { home += v; } else if (i === j) { draw += v; } else { away += v; }
+          }
+        }
+        return [home / total, draw / total, away / total];
+      }
+
+      function mulberry32(seed) {
+        var a = seed >>> 0;
+        return function () {
+          a = (a + 0x6D2B79F5) >>> 0;
+          var t = a;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function poissonSample(lam, rand) {
+        var limit = Math.exp(-lam), k = 0, p = 1;
+        do { k++; p *= rand(); } while (p > limit);
+        return k - 1;
+      }
+
+      function simulate(model, home, away, n, seed, maxGoals) {
+        maxGoals = maxGoals || 8;
+        if (!(n >= MIN_SIMULATIONS && n <= MAX_SIMULATIONS)) { throw new Error("n_simulations fuera de rango"); }
+        var lam = expectedGoals(model, home, away), rand = mulberry32(seed || 0), side = maxGoals + 1;
+        var matrix = new Array(side * side).fill(0), w = 0, d = 0, l = 0;
+        for (var s = 0; s < n; s++) {
+          var g1 = poissonSample(lam[0], rand), g2 = poissonSample(lam[1], rand);
+          matrix[Math.min(g1, maxGoals) * side + Math.min(g2, maxGoals)] += 1;
+          if (g1 > g2) { w++; } else if (g1 === g2) { d++; } else { l++; }
+        }
+        for (var m = 0; m < matrix.length; m++) { matrix[m] /= n; }
+        return { lamHome: lam[0], lamAway: lam[1], pHome: w / n, pDraw: d / n, pAway: l / n, matrix: matrix, side: side, n: n };
+      }
+
+      function topScorelines(proj, k) {
+        var rows = [];
+        proj.matrix.forEach(function (p, idx) { rows.push({ score: Math.floor(idx / proj.side) + "-" + (idx % proj.side), p: p, idx: idx }); });
+        rows.sort(function (x, y) { return (y.p - x.p) || (x.idx - y.idx); });
+        return rows.slice(0, k || 5);
+      }
+
+      return { expectedGoals: expectedGoals, analytic: analytic, simulate: simulate, topScorelines: topScorelines, mulberry32: mulberry32 };
+    })();
+    // ENGINE-END
+
+    (function () {
+      "use strict";
+      var I18N = {
+        es: { title: "Simulador de partidos", warn: "Datos sintéticos de demostración: no representan resultados reales. Las proyecciones son ilustrativas, no asesoría de apuestas ni financiera.",
+              home: "Local", away: "Visitante", seed: "Semilla", sims: "Simulaciones", matches: "Partidos", teams: "Equipos", muH: "Goles local / partido", muA: "Goles visitante / partido",
+              wins: "Gana ", draw: "Empate", vs: "vs exacto", heat: "Marcadores (local ↓ · visitante →)", top: "Marcadores más probables", str: "Fuerza de equipos (1.0 = promedio)",
+              team: "Equipo", att: "Ataque", def: "Defensa", score: "Marcador", prob: "Probabilidad",
+              nheat: "Marcadores de 8 o más goles se agrupan en la última fila/columna. El generador pseudoaleatorio es distinto al de NumPy: las cifras simuladas no coinciden bit a bit con la versión Python; el cálculo exacto sí." },
+        en: { title: "Match simulator", warn: "Synthetic demo data: it does not represent real results. Projections are illustrative, not betting or financial advice.",
+              home: "Home", away: "Away", seed: "Seed", sims: "Simulations", matches: "Matches", teams: "Teams", muH: "Home goals / match", muA: "Away goals / match",
+              wins: "Wins ", draw: "Draw", vs: "vs exact", heat: "Scorelines (home ↓ · away →)", top: "Most likely scorelines", str: "Team strength (1.0 = average)",
+              team: "Team", att: "Attack", def: "Defense", score: "Scoreline", prob: "Probability",
+              nheat: "Scores of 8+ goals are grouped in the last row/column. The pseudo-random generator differs from NumPy's: simulated figures do not match the Python version bit for bit; the exact calculation does." }
+      };
+      var $ = function (id) { return document.getElementById(id); };
+      var state = { lang: "es" };
+      try {
+        var saved = localStorage.getItem("jw-sim-lang");
+        if (saved && I18N[saved]) { state.lang = saved; }
+        else if (navigator.language && navigator.language.slice(0, 2) === "en") { state.lang = "en"; }
+      } catch (e) { /* almacenamiento no disponible (iframe sandbox) */ }
+
+      var names = Object.keys(DATA.teams).sort();
+      function pct(x) { return (x * 100).toFixed(1) + "%"; }
+      function signed(x) { return (x >= 0 ? "+" : "") + (x * 100).toFixed(2) + "%"; }
+      function node(tag, text, cls) { var n = document.createElement(tag); if (text !== undefined) { n.textContent = text; } if (cls) { n.className = cls; } return n; }
+      function clear(el) { el.textContent = ""; }
+
+      function fillSelect(sel, keep, fallbackIndex) {
+        var current = keep || names[fallbackIndex];
+        clear(sel);
+        names.forEach(function (t) { var o = node("option", t); o.value = t; sel.appendChild(o); });
+        sel.value = current;
+      }
+
+      function row(cells, header) {
+        var tr = document.createElement("tr");
+        cells.forEach(function (c, i) { var td = node(header ? "th" : "td", c); if (i === 0) { td.className = "l"; } tr.appendChild(td); });
+        return tr;
+      }
+
+      function render() {
+        var d = I18N[state.lang], home = $("home").value, away = $("away").value;
+        document.documentElement.lang = state.lang;
+        $("lang").value = state.lang;
+        $("title").textContent = d.title; $("warn").textContent = d.warn;
+        $("l-home").textContent = d.home; $("l-away").textContent = d.away; $("l-seed").textContent = d.seed; $("l-sims").textContent = d.sims;
+        $("h-heat").textContent = d.heat; $("h-top").textContent = d.top; $("h-str").textContent = d.str; $("n-heat").textContent = d.nheat;
+        var n = parseInt($("sims").value, 10), seed = Math.max(0, Math.min(10000, parseInt($("seed").value, 10) || 0));
+        $("simsOut").textContent = n.toLocaleString();
+
+        var kpis = $("kpis"), bars = $("bars"), heat = $("heat"), top = $("top"), str = $("str");
+        [kpis, bars, heat, top, str].forEach(clear);
+        if (home === away) { kpis.appendChild(node("div", "Local ≠ Visitante", "card")); return; }
+
+        var proj = ENGINE.simulate(DATA, home, away, n, seed), exact = ENGINE.analytic(proj.lamHome, proj.lamAway);
+        [[d.matches, DATA.matches], [d.teams, names.length], [d.muH, DATA.mu_home.toFixed(2)], [d.muA, DATA.mu_away.toFixed(2)],
+         ["λ " + home, proj.lamHome.toFixed(2)], ["λ " + away, proj.lamAway.toFixed(2)]].forEach(function (k) {
+          var c = node("div", undefined, "card"); c.appendChild(node("div", k[0], "k")); c.appendChild(node("div", String(k[1]), "v")); kpis.appendChild(c);
+        });
+
+        [[d.wins + home, proj.pHome, exact[0]], [d.draw, proj.pDraw, exact[1]], [d.wins + away, proj.pAway, exact[2]]].forEach(function (b) {
+          var r = node("div", undefined, "bar"), track = node("div", undefined, "track"), fill = node("div", undefined, "fill");
+          fill.style.width = (b[1] * 100).toFixed(2) + "%";
+          track.appendChild(fill);
+          r.appendChild(node("span", b[0])); r.appendChild(track);
+          r.appendChild(node("span", pct(b[1]) + " (" + signed(b[1] - b[2]) + " " + d.vs + ")", "pct"));
+          bars.appendChild(r);
+        });
+
+        var maxP = Math.max.apply(null, proj.matrix), hr = document.createElement("tr");
+        hr.appendChild(node("th", "")); for (var j = 0; j < proj.side; j++) { hr.appendChild(node("th", String(j))); }
+        heat.appendChild(hr);
+        for (var i = 0; i < proj.side; i++) {
+          var tr = document.createElement("tr"); tr.appendChild(node("th", String(i)));
+          for (var jj = 0; jj < proj.side; jj++) {
+            var p = proj.matrix[i * proj.side + jj], td = node("td", p >= 0.005 ? (p * 100).toFixed(0) : "");
+            td.style.background = "rgba(56,189,248," + (maxP ? (0.85 * p / maxP).toFixed(3) : 0) + ")";
+            td.title = i + "-" + jj + ": " + pct(p);
+            tr.appendChild(td);
+          }
+          heat.appendChild(tr);
+        }
+
+        top.appendChild(row([d.score, d.prob], true));
+        ENGINE.topScorelines(proj, 5).forEach(function (s) { top.appendChild(row([s.score, pct(s.p)])); });
+
+        str.appendChild(row([d.team, d.att, d.def], true));
+        names.slice().sort(function (x, y) { return DATA.teams[y].attack - DATA.teams[x].attack; }).forEach(function (t) {
+          str.appendChild(row([t, DATA.teams[t].attack.toFixed(3), DATA.teams[t].defense.toFixed(3)]));
+        });
+      }
+
+      fillSelect($("home"), null, 0);
+      fillSelect($("away"), null, 1);
+      ["home", "away", "seed", "sims"].forEach(function (id) { $(id).addEventListener("input", render); });
+      $("lang").addEventListener("change", function (e) {
+        state.lang = I18N[e.target.value] ? e.target.value : "es";
+        try { localStorage.setItem("jw-sim-lang", state.lang); } catch (err) { /* ignorar */ }
+        render();
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

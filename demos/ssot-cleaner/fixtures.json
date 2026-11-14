@@ -1,0 +1,895 @@
+{
+ "cases": [
+  {
+   "name": "readme_demo",
+   "columns": [
+    "ID",
+    "Nombre Completo",
+    "Monto (Bs)",
+    "Fecha",
+    "Activo",
+    "Observaciones"
+   ],
+   "rows": [
+    [
+     "1",
+     "  juan   pérez ",
+     "Bs. 1.234,56",
+     "15/03/2025",
+     "Sí",
+     "x"
+    ],
+    [
+     "2",
+     "MARÍA lópez",
+     "1,234.56",
+     "2025-03-15",
+     "no",
+     "x"
+    ],
+    [
+     "3",
+     "N/A",
+     "$25",
+     "5-4-25",
+     "si",
+     "x"
+    ],
+    [
+     "4",
+     "carlos o'neil",
+     "abc",
+     "31/02/2025",
+     "maybe",
+     "x"
+    ],
+    [
+     "2",
+     "duplicada maría",
+     "10",
+     "01/01/2024",
+     "1",
+     "x"
+    ],
+    [
+     "3.5",
+     "ana",
+     "1.234",
+     "x",
+     "falso",
+     "x"
+    ],
+    [
+     "2.0",
+     "luis",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "sin id",
+     "5",
+     "01/01/2024",
+     "true",
+     ""
+    ],
+    [
+     "7",
+     "-",
+     "-",
+     "S/D",
+     "N/D",
+     "x"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "id",
+     "dtype": "int",
+     "required": true,
+     "key": true,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "name",
+     "dtype": "string",
+     "required": true,
+     "key": false,
+     "case": "title",
+     "aliases": [
+      "Nombre Completo"
+     ]
+    },
+    {
+     "name": "amount",
+     "dtype": "float",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": [
+      "Monto (Bs)"
+     ]
+    },
+    {
+     "name": "date",
+     "dtype": "date",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": [
+      "Fecha"
+     ]
+    },
+    {
+     "name": "active",
+     "dtype": "bool",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": [
+      "Activo"
+     ]
+    }
+   ],
+   "expected": {
+    "columns": [
+     "id",
+     "name",
+     "amount",
+     "date",
+     "active"
+    ],
+    "rows": [
+     [
+      1,
+      "Juan Pérez",
+      1234.56,
+      "2025-03-15",
+      true
+     ],
+     [
+      2,
+      "María López",
+      1234.56,
+      "2025-03-15",
+      false
+     ],
+     [
+      4,
+      "Carlos O'Neil",
+      null,
+      null,
+      null
+     ]
+    ],
+    "report": {
+     "rows_in": 9,
+     "rows_out": 3,
+     "dropped_null_required": 4,
+     "dropped_duplicates": 2,
+     "coerced_to_na": {
+      "id": 1,
+      "amount": 1,
+      "date": 2,
+      "active": 2
+     }
+    }
+   }
+  },
+  {
+   "name": "sin_clave_dedupe_filas",
+   "columns": [
+    "a",
+    "b"
+   ],
+   "rows": [
+    [
+     "x",
+     "1"
+    ],
+    [
+     "x",
+     "1"
+    ],
+    [
+     "y",
+     "2"
+    ],
+    [
+     "x",
+     "1"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "a",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "b",
+     "dtype": "int",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "a",
+     "b"
+    ],
+    "rows": [
+     [
+      "x",
+      1
+     ],
+     [
+      "y",
+      2
+     ]
+    ],
+    "report": {
+     "rows_in": 4,
+     "rows_out": 2,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 2,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "case_upper_lower_keep",
+   "columns": [
+    "u",
+    "l",
+    "k"
+   ],
+   "rows": [
+    [
+     "abc Def",
+     "ABC dEf",
+     "aBc dEf"
+    ],
+    [
+     "n/a",
+     "NULL",
+     "  s/d "
+    ]
+   ],
+   "rules": [
+    {
+     "name": "u",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "upper",
+     "aliases": []
+    },
+    {
+     "name": "l",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "lower",
+     "aliases": []
+    },
+    {
+     "name": "k",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "u",
+     "l",
+     "k"
+    ],
+    "rows": [
+     [
+      "ABC DEF",
+      "abc def",
+      "aBc dEf"
+     ],
+     [
+      null,
+      null,
+      null
+     ]
+    ],
+    "report": {
+     "rows_in": 2,
+     "rows_out": 2,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 0,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "opcional_ausente",
+   "columns": [
+    "id"
+   ],
+   "rows": [
+    [
+     "1"
+    ],
+    [
+     "2"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "id",
+     "dtype": "int",
+     "required": true,
+     "key": true,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "extra",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "when",
+     "dtype": "date",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "id",
+     "extra",
+     "when"
+    ],
+    "rows": [
+     [
+      1,
+      null,
+      null
+     ],
+     [
+      2,
+      null,
+      null
+     ]
+    ],
+    "report": {
+     "rows_in": 2,
+     "rows_out": 2,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 0,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "tipos_nativos",
+   "columns": [
+    "id",
+    "v",
+    "ok",
+    "name"
+   ],
+   "rows": [
+    [
+     1,
+     2.5,
+     true,
+     "a"
+    ],
+    [
+     2,
+     null,
+     false,
+     null
+    ],
+    [
+     3,
+     "7,5",
+     1,
+     5
+    ],
+    [
+     null,
+     1,
+     0,
+     "z"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "id",
+     "dtype": "int",
+     "required": true,
+     "key": true,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "v",
+     "dtype": "float",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "ok",
+     "dtype": "bool",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "name",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "title",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "id",
+     "v",
+     "ok",
+     "name"
+    ],
+    "rows": [
+     [
+      1,
+      2.5,
+      true,
+      "A"
+     ],
+     [
+      2,
+      null,
+      false,
+      null
+     ],
+     [
+      3,
+      7.5,
+      true,
+      "5"
+     ]
+    ],
+    "report": {
+     "rows_in": 4,
+     "rows_out": 3,
+     "dropped_null_required": 1,
+     "dropped_duplicates": 0,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "alias_acentos",
+   "columns": [
+    "Número de Teléfono",
+    "  PAÍS  "
+   ],
+   "rows": [
+    [
+     "0414",
+     "ve"
+    ],
+    [
+     "0424",
+     "co"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "telefono",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": [
+      "Número de Teléfono"
+     ]
+    },
+    {
+     "name": "pais",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "upper",
+     "aliases": [
+      "País"
+     ]
+    }
+   ],
+   "expected": {
+    "columns": [
+     "telefono",
+     "pais"
+    ],
+    "rows": [
+     [
+      "0414",
+      "VE"
+     ],
+     [
+      "0424",
+      "CO"
+     ]
+    ],
+    "report": {
+     "rows_in": 2,
+     "rows_out": 2,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 0,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "fechas_dmy",
+   "columns": [
+    "d"
+   ],
+   "rows": [
+    [
+     "01/02/2024 10:30"
+    ],
+    [
+     "1.2.2024"
+    ],
+    [
+     "13/01/2024"
+    ],
+    [
+     "01/13/2024"
+    ],
+    [
+     "31-12-99"
+    ],
+    [
+     "15/06/45"
+    ],
+    [
+     "15/06/69"
+    ],
+    [
+     "2024-02-29"
+    ],
+    [
+     "2023-02-29"
+    ],
+    [
+     "32/01/2024"
+    ],
+    [
+     "13/13/2024"
+    ],
+    [
+     "2024-01-05T08:00:00"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "d",
+     "dtype": "date",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "d"
+    ],
+    "rows": [
+     [
+      "2024-02-01"
+     ],
+     [
+      "2024-01-13"
+     ],
+     [
+      "1999-12-31"
+     ],
+     [
+      "2045-06-15"
+     ],
+     [
+      "2069-06-15"
+     ],
+     [
+      "2024-02-29"
+     ],
+     [
+      null
+     ],
+     [
+      "2024-01-05"
+     ]
+    ],
+    "report": {
+     "rows_in": 12,
+     "rows_out": 8,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 4,
+     "coerced_to_na": {
+      "d": 3
+     }
+    }
+   }
+  },
+  {
+   "name": "numeros",
+   "columns": [
+    "n",
+    "i"
+   ],
+   "rows": [
+    [
+     "Bs. 1.234.567,89",
+     "1.000"
+    ],
+    [
+     "1,5",
+     "1,000"
+    ],
+    [
+     "-12,5",
+     "+7"
+    ],
+    [
+     "12.345,6",
+     "1e3"
+    ],
+    [
+     "1.2.3",
+     "3,0"
+    ],
+    [
+     "$ 0,50",
+     "12abc"
+    ],
+    [
+     "  ",
+     "-"
+    ],
+    [
+     "5.",
+     "007"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "n",
+     "dtype": "float",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "i",
+     "dtype": "int",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "n",
+     "i"
+    ],
+    "rows": [
+     [
+      1234567.89,
+      1000
+     ],
+     [
+      1.5,
+      1000
+     ],
+     [
+      -12.5,
+      7
+     ],
+     [
+      12345.6,
+      13
+     ],
+     [
+      123.0,
+      3
+     ],
+     [
+      0.5,
+      12
+     ],
+     [
+      null,
+      null
+     ],
+     [
+      5.0,
+      7
+     ]
+    ],
+    "report": {
+     "rows_in": 8,
+     "rows_out": 8,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 0,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "vacio",
+   "columns": [
+    "a"
+   ],
+   "rows": [],
+   "rules": [
+    {
+     "name": "a",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "columns": [
+     "a"
+    ],
+    "rows": [],
+    "report": {
+     "rows_in": 0,
+     "rows_out": 0,
+     "dropped_null_required": 0,
+     "dropped_duplicates": 0,
+     "coerced_to_na": {}
+    }
+   }
+  },
+  {
+   "name": "err_faltan_obligatorias",
+   "columns": [
+    "x"
+   ],
+   "rows": [
+    [
+     "1"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "id",
+     "dtype": "int",
+     "required": true,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "error": "Faltan columnas obligatorias: id"
+   }
+  },
+  {
+   "name": "err_duplicado_destino",
+   "columns": [
+    "ID",
+    "id"
+   ],
+   "rows": [
+    [
+     "1",
+     "2"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "id",
+     "dtype": "int",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "error": "Varias columnas de origen mapean a: id"
+   }
+  },
+  {
+   "name": "err_alias_duplicados",
+   "columns": [
+    "Nombre",
+    "Nombre Completo"
+   ],
+   "rows": [
+    [
+     "a",
+     "b"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "name",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": [
+      "Nombre",
+      "Nombre Completo"
+     ]
+    }
+   ],
+   "expected": {
+    "error": "Varias columnas de origen mapean a: name"
+   }
+  },
+  {
+   "name": "err_esquema_duplicado",
+   "columns": [
+    "a"
+   ],
+   "rows": [
+    [
+     "1"
+    ]
+   ],
+   "rules": [
+    {
+     "name": "a",
+     "dtype": "string",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    },
+    {
+     "name": "a",
+     "dtype": "int",
+     "required": false,
+     "key": false,
+     "case": "keep",
+     "aliases": []
+    }
+   ],
+   "expected": {
+    "error": "Nombres de columna duplicados en el esquema"
+   }
+  }
+ ],
+ "current_year": 2026
+}
