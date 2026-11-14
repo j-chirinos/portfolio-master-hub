@@ -721,7 +721,7 @@
       <div class="footer-card">
         <h2>J. Chirinos | Data Analyst &amp; AI Solutions Specialist</h2>
         <div class="footer-actions">
-          <a class="btn primary" href="https://drive.google.com/file/d/1C6TKaWsjZYNsxffX64WAJ1Ochlh9cTDJ/view?usp=drive_link" target="_blank" rel="noopener noreferrer">📄 Descargar CV (PDF)</a>
+          <a id="cvLink" class="btn primary" href="https://drive.google.com/file/d/1C6TKaWsjZYNsxffX64WAJ1Ochlh9cTDJ/view?usp=drive_link" target="_blank" rel="noopener noreferrer">📄 Descargar CV (PDF)</a>
           <a class="btn ghost" href="https://www.linkedin.com/in/j-chirinos-662955195" target="_blank" rel="noopener noreferrer">🔗 LinkedIn</a>
           <a class="btn ghost" href="mailto:jchasesor@gmail.com">✉️ Contacto Directo</a>
         </div>
@@ -852,7 +852,7 @@
         "Procesos manuales convertidos en pipelines automáticos, medibles y probados.": "Manual processes turned into automated, measurable and tested pipelines.",
         "Caso real · Banca & Siniestralidad": "Real case · Banking & Claims",
         "Desarrollo de pipelines ETL en Python y scripts de Google Apps Script para automatizar referimientos de la banca y depuración masiva de siniestralidad, eliminando errores operativos manuales en un 95%.": "Python ETL pipelines and Google Apps Script automations for banking referrals and bulk claims-data cleansing, eliminating manual operational errors by 95%.",
-        "📄 Descargar CV (PDF)": "📄 Download CV (PDF)",
+        "📄 Descargar CV (PDF)": "📄 Download Resume / CV (PDF)",
         "✉️ Contacto Directo": "✉️ Contact Me",
         "J. Chirinos — Ecosistema de Analytics & Soluciones con Inteligencia Artificial | Caracas, Venezuela": "J. Chirinos — Analytics Ecosystem & Artificial Intelligence Solutions | Caracas, Venezuela"
 };
@@ -884,6 +884,12 @@
       var meta = document.querySelector('meta[name="description"]');
       var langBtns = Array.prototype.slice.call(document.querySelectorAll(".lang-btn"));
 
+      /* CV por idioma. Pegar en URL_CV_EN el enlace público del CV en inglés (Drive "cualquiera con el enlace");
+         mientras esté vacío, el botón en EN usa el CV en español como respaldo para no dejar un enlace roto. */
+      var URL_CV_ES = "https://drive.google.com/file/d/1C6TKaWsjZYNsxffX64WAJ1Ochlh9cTDJ/view?usp=drive_link";
+      var URL_CV_EN = "";
+      var cvLink = document.getElementById("cvLink");
+
       function setLang(lang) {
         var en = lang === "en";
         items.forEach(function (it) {
@@ -891,6 +897,7 @@
           if (it.attr) { it.el.setAttribute(it.attr, val); } else { it.el.nodeValue = val; }
         });
         if (meta) { meta.setAttribute("content", en ? META_EN : META_ES); }
+        if (cvLink) { cvLink.setAttribute("href", (en && URL_CV_EN) ? URL_CV_EN : URL_CV_ES); }
         document.documentElement.lang = en ? "en" : "es";
         langBtns.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === (en ? "en" : "es"))); });
         try { localStorage.setItem("portfolio-lang", en ? "en" : "es"); } catch (e) { /* almacenamiento no disponible */ }
