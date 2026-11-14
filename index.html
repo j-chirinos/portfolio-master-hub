@@ -436,6 +436,76 @@
       .hero-text .typewriter-text { min-height: 3.2em; }
       .hero-container > .stats-grid { margin-top: 12px; }
     }
+
+    /* ============================================================
+       ROTACIÓN VERTICAL EN PÁGINAS WEB (.v-rotator)
+       Carrusel de una fila, 3 posiciones visibles (izq. / centro / der.),
+       entrada y salida con paseo vertical. Ver docs/PATRON_ROTACION_VERTICAL.md
+       Sin JS (o antes de que arranque) las tarjetas se ven como una grilla normal.
+       ============================================================ */
+    .v-rotator { position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .v-rotator-stage { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .v-rotator-btn, .v-rotator-meta { display: none; }
+
+    .v-rotator.is-ready { --vr-w: min(400px, max(38%, 260px)); --vr-x: 92%; --vr-ms: .65s; --vr-ease: cubic-bezier(0.22, 1, 0.36, 1); }
+    .v-rotator.is-ready .v-rotator-stage { display: block; position: relative; width: 100%; min-height: 360px; }
+
+    .v-rotator.is-ready .v-rotator-item {
+      position: absolute; top: 50%; left: 50%; width: var(--vr-w); margin: 0; box-sizing: border-box;
+      --x: 0%; --y: 40px; --s: 0.6; --blur: 3.5px; --op: 0;
+      transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(var(--s));
+      filter: blur(var(--blur)); opacity: var(--op);
+      transition: transform var(--vr-ms) var(--vr-ease), opacity var(--vr-ms) var(--vr-ease), filter var(--vr-ms) var(--vr-ease), border-color .3s, box-shadow .3s;
+      will-change: transform, opacity, filter;
+    }
+    .v-rotator.is-ready .v-rotator-item.no-anim { transition: none !important; }
+    /* Posición central: nítida, a tamaño completo y con borde cian iluminado */
+    .v-rotator.is-ready .v-rotator-item.is-center { --x: 0%; --y: 0px; --s: 1; --blur: 0px; --op: 1; z-index: 3;
+      border-color: rgba(0, 255, 255, 0.65); box-shadow: 0 0 26px rgba(0, 255, 255, 0.28), 0 8px 30px rgba(0, 255, 255, 0.14); }
+    /* Posiciones laterales: 60 %, desenfocadas; un clic las trae al centro */
+    .v-rotator.is-ready .v-rotator-item.is-left,
+    .v-rotator.is-ready .v-rotator-item.is-right { --y: 0px; --s: 0.6; --blur: 3.5px; --op: 0.55; z-index: 1; cursor: pointer; }
+    .v-rotator.is-ready .v-rotator-item.is-left { --x: calc(var(--vr-x) * -1); }
+    .v-rotator.is-ready .v-rotator-item.is-right { --x: var(--vr-x); }
+    /* Paseo vertical: sale hacia arriba (-40px), entra desde abajo (+40px) */
+    .v-rotator.is-ready .v-rotator-item.is-exit { --y: -40px; --s: 0.5; --op: 0; pointer-events: none; z-index: 0; }
+    .v-rotator.is-ready .v-rotator-item.is-offstage { --y: 40px; --s: 0.5; --op: 0; visibility: hidden; pointer-events: none; z-index: 0; }
+
+    .v-rotator.is-ready .v-rotator-btn {
+      display: grid; place-items: center; position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+      width: 44px; height: 44px; padding: 0; font: inherit; font-size: 1.6rem; line-height: 1; color: var(--accent-blue);
+      background: rgba(0, 0, 0, 0.62); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 50%; cursor: pointer;
+      backdrop-filter: blur(6px); transition: box-shadow .18s, background .18s, border-color .18s;
+    }
+    .v-rotator.is-ready .v-rotator-btn.prev { left: 8px; }
+    .v-rotator.is-ready .v-rotator-btn.next { right: 8px; }
+    .v-rotator.is-ready .v-rotator-btn:hover, .v-rotator.is-ready .v-rotator-btn:focus-visible {
+      background: rgba(0, 255, 255, 0.12); border-color: var(--accent-blue); box-shadow: 0 0 18px rgba(0, 255, 255, 0.55); outline: none;
+    }
+    .v-rotator.is-ready .v-rotator-btn[hidden] { display: none; }
+
+    .v-rotator-meta[hidden] { display: none; }
+    .v-rotator-meta.is-ready { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; }
+    .v-rotator-count { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+    .v-rotator-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+    .v-dot { width: 24px; height: 24px; padding: 0; background: transparent; border: 0; cursor: pointer; display: grid; place-items: center; }
+    .v-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(0, 255, 255, 0.5); background: transparent; transition: all .2s; }
+    .v-dot[aria-current="true"]::before { background: var(--accent-blue); box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); transform: scale(1.25); }
+    .v-dot:hover::before, .v-dot:focus-visible::before { border-color: var(--accent-blue); }
+    .v-dot:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 1px; border-radius: 50%; }
+
+    @media (max-width: 768px) {
+      .v-rotator.is-ready { --vr-w: 80%; --vr-x: 80%; }
+      .v-rotator.is-ready .v-rotator-btn { width: 36px; height: 36px; font-size: 1.3rem; }
+      .v-rotator.is-ready .v-rotator-btn.prev { left: 4px; }
+      .v-rotator.is-ready .v-rotator-btn.next { right: 4px; }
+      .v-rotator.is-ready .v-rotator-item.is-left,
+      .v-rotator.is-ready .v-rotator-item.is-right { --blur: 3px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .v-rotator.is-ready .v-rotator-item { transition: none !important; will-change: auto; }
+      .v-rotator.is-ready .v-rotator-item.is-exit, .v-rotator.is-ready .v-rotator-item.is-offstage { --y: 0px; }
+    }
   </style>
 </head>
 <body>
@@ -531,7 +601,9 @@
           <button class="filter-btn" type="button" data-filter="ia" aria-pressed="false">IA Generativa</button>
         </div>
 
-        <div class="projects" id="projects" aria-live="polite">
+        <div class="v-rotator" role="group" aria-label="Carrusel de proyectos" data-vr-interval="5500">
+          <button class="v-rotator-btn prev" type="button" aria-label="Anterior">&#8249;</button>
+          <div class="v-rotator-stage" id="projects">
           <article class="project-card" data-category="freelance bi automatizacion">
             <span class="org alt">Consultoría Freelance</span>
             <h3>Dashboard de Siniestralidad</h3>
@@ -619,6 +691,8 @@
             </ul>
             <div class="tags"><span class="tag">LLMs</span><span class="tag">Prompt Engineering</span><span class="tag">Seguros</span></div>
           </article>
+          </div>
+          <button class="v-rotator-btn next" type="button" aria-label="Siguiente">&#8250;</button>
         </div>
         <p class="empty" id="empty" hidden>No hay proyectos para este filtro.</p>
       </div>
@@ -687,7 +761,9 @@
       <div class="container">
         <h2 id="t-eco">Ecosistema de Repositorios</h2>
         <p class="lead">Repositorios open source que complementan este portafolio.</p>
-        <div class="grid-3">
+        <div class="v-rotator" role="group" aria-label="Carrusel de repositorios" data-vr-interval="5500">
+          <button class="v-rotator-btn prev" type="button" aria-label="Anterior">&#8249;</button>
+          <div class="v-rotator-stage">
           <div class="box">
             <h3><a class="repo-link" href="https://github.com/j-chirinos/segubot-ocr-agent" target="_blank" rel="noopener noreferrer">segubot-ocr-agent</a></h3>
             <p>Pipeline OCR de comprobantes de pago: extracción, validación por Regex y registro en Google Sheets como SSoT.</p>
@@ -720,6 +796,8 @@
               <a class="repo-cta" href="https://github.com/j-chirinos/jw-solutions-utility-hub" target="_blank" rel="noopener noreferrer">Ver en GitHub →</a>
             </div>
           </div>
+          </div>
+          <button class="v-rotator-btn next" type="button" aria-label="Siguiente">&#8250;</button>
         </div>
       </div>
     </section>
@@ -796,6 +874,10 @@
         "Proyectos": "Projects",
         "Ecosistema": "Ecosystem",
         "Ver detalle y demo": "View details & demo",
+        "Anterior": "Previous",
+        "Siguiente": "Next",
+        "Carrusel de repositorios": "Repositories carousel",
+        "Carrusel de proyectos": "Projects carousel",
         "👋 Hola, soy": "👋 Hi, I'm",
         "Banca & Seguros": "Banking & Insurance",
         "Data Analyst & Business Intelligence Specialist. AI Solutions & Prompt Engineering Lead. Automatización de Procesos con Python & LLMs. Optimización Financiera & Arquitectura de Datos (SSoT).": "Data Analyst & Business Intelligence Specialist. AI Solutions & Prompt Engineering Lead. Process Automation with Python & LLMs. Financial Optimization & Data Architecture (SSoT).",
@@ -1268,6 +1350,186 @@
       });
       /* Re-renderiza al cambiar el idioma del portafolio (setLang actualiza <html lang>). */
       new MutationObserver(function () { if (current) { render(); } }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    })();
+  </script>
+  <script>
+    /* ROTACIÓN VERTICAL EN PÁGINAS WEB: controlador reutilizable (.v-rotator). Ver docs/PATRON_ROTACION_VERTICAL.md */
+    (function () {
+      "use strict";
+      var STEP_MS = 650;
+      var L10N = { es: { go: "Ir a la tarjeta " }, en: { go: "Go to card " } };
+      function reduced() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+      function lang() { return document.documentElement.lang === "en" ? "en" : "es"; }
+      function reflow(el) { return el.offsetWidth; }
+      function modalOpen() {
+        return ["projectModal", "skillsModal"].some(function (id) { var m = document.getElementById(id); return m && m.classList.contains("open"); });
+      }
+
+      /* opts: { interval, getItems() -> HTMLElement[] (subconjunto activo, en orden) } */
+      function VRotator(root, opts) {
+        opts = opts || {};
+        var stage = root.querySelector(".v-rotator-stage");
+        var prevBtn = root.querySelector(".v-rotator-btn.prev"), nextBtn = root.querySelector(".v-rotator-btn.next");
+        var all = Array.prototype.slice.call(stage.children);
+        var interval = opts.interval || parseInt(root.getAttribute("data-vr-interval"), 10) || 5500;
+        var active = [], idx = 0, timer = null, hovering = false, focusing = false, onScreen = true;
+
+        var meta = document.createElement("div"); meta.className = "v-rotator-meta"; meta.hidden = true;
+        var count = document.createElement("span"); count.className = "v-rotator-count";
+        var dots = document.createElement("div"); dots.className = "v-rotator-dots";
+        meta.appendChild(count); meta.appendChild(dots);
+        root.insertAdjacentElement("afterend", meta);
+
+        all.forEach(function (el) { el.classList.add("v-rotator-item", "is-offstage"); el._vrSlot = "off"; });
+        root.classList.add("is-ready"); meta.classList.add("is-ready");
+
+        function slotOf(k, n) {
+          if (n === 1) { return "center"; }
+          if (n === 2) { return k === idx ? "center" : "right"; }
+          if (k === idx) { return "center"; }
+          if (k === (idx - 1 + n) % n) { return "left"; }
+          if (k === (idx + 1) % n) { return "right"; }
+          return "off";
+        }
+        function setSlotClass(el, slot) {
+          el.classList.remove("is-left", "is-center", "is-right");
+          if (slot !== "off") { el.classList.add("is-" + slot); }
+        }
+        function hardSet(el, slot) {
+          el.classList.add("no-anim"); el.classList.remove("is-exit");
+          setSlotClass(el, slot); el.classList.toggle("is-offstage", slot === "off");
+          reflow(el); el.classList.remove("no-anim"); el._vrSlot = slot;
+        }
+        function enter(el, slot) { /* aparece desde abajo (+40px) y sube al centro/lateral */
+          el.classList.add("no-anim", "is-offstage"); setSlotClass(el, slot);
+          reflow(el); el.classList.remove("no-anim"); reflow(el);
+          el.classList.remove("is-offstage"); el._vrSlot = slot;
+        }
+        function finalizeExit(el) {
+          clearTimeout(el._vrT);
+          if (!el.classList.contains("is-exit")) { return; }
+          hardSet(el, "off");
+          var after = el._vrAfter; el._vrAfter = null;
+          if (after) { after(); }
+        }
+        function exit(el) { /* sale hacia arriba (-40px) */
+          el.classList.add("is-exit");
+          el._vrT = setTimeout(function () { finalizeExit(el); }, STEP_MS);
+        }
+        function move(el, from, to, animate) {
+          if (!animate || reduced()) { hardSet(el, to); return; }
+          if (from === to) { return; }
+          if (from === "off") { enter(el, to); }
+          else if (to === "off") { exit(el); }
+          else if ((from === "left" && to === "right") || (from === "right" && to === "left")) {
+            exit(el); el._vrAfter = function () { enter(el, to); };
+          } else { setSlotClass(el, to); el._vrSlot = to; }
+        }
+
+        function setFocusable(el, on) {
+          Array.prototype.forEach.call(el.querySelectorAll("a[href],button"), function (f) {
+            if (on) { f.removeAttribute("tabindex"); } else { f.setAttribute("tabindex", "-1"); }
+          });
+        }
+        function updateHeight() {
+          var h = 0;
+          active.forEach(function (el) { h = Math.max(h, el.offsetHeight); });
+          stage.style.minHeight = active.length ? (h + 56) + "px" : "0px";
+        }
+        function updateMeta() {
+          var n = active.length, d = L10N[lang()];
+          meta.hidden = n < 2; prevBtn.hidden = nextBtn.hidden = n < 2;
+          count.textContent = (idx + 1) + " / " + n;
+          dots.textContent = "";
+          if (n < 2) { return; }
+          active.forEach(function (_, k) {
+            var b = document.createElement("button"); b.type = "button"; b.className = "v-dot";
+            b.setAttribute("aria-label", d.go + (k + 1) + " / " + n);
+            if (k === idx) { b.setAttribute("aria-current", "true"); }
+            b.addEventListener("click", function () { goTo(k); });
+            dots.appendChild(b);
+          });
+        }
+
+        function layout(animate) {
+          all.forEach(function (el) { if (el.classList.contains("is-exit")) { finalizeExit(el); } });
+          var n = active.length;
+          all.forEach(function (el) {
+            var k = active.indexOf(el);
+            var slot = k < 0 ? "off" : slotOf(k, n);
+            move(el, el._vrSlot, slot, animate);
+            if (slot === "center") { el.removeAttribute("aria-hidden"); } else { el.setAttribute("aria-hidden", "true"); }
+            setFocusable(el, slot === "center");
+          });
+          updateHeight(); updateMeta();
+        }
+
+        function paused() { return hovering || focusing || !onScreen || document.hidden || modalOpen(); }
+        function stop() { if (timer) { clearInterval(timer); timer = null; } }
+        function restart() {
+          stop();
+          if (active.length < 2 || reduced()) { return; }
+          timer = setInterval(function () { if (!paused()) { step(1, false); } }, interval);
+        }
+        function step(dir, manual) {
+          var n = active.length;
+          if (n < 2) { return; }
+          idx = (idx + dir + n) % n; layout(true);
+          if (manual) { restart(); }
+        }
+        function goTo(k) { if (k !== idx) { idx = k; layout(true); restart(); } }
+        function refresh() {
+          active = opts.getItems ? opts.getItems() : all.filter(function (el) { return !el.hidden; });
+          idx = 0; layout(false); restart();
+        }
+
+        prevBtn.addEventListener("click", function () { step(-1, true); });
+        nextBtn.addEventListener("click", function () { step(1, true); });
+        stage.addEventListener("click", function (e) { /* clic en lateral: lo centra (sin activar sus enlaces/botones) */
+          var item = e.target.closest(".v-rotator-item");
+          if (!item || !stage.contains(item)) { return; }
+          if (item.classList.contains("is-left")) { e.preventDefault(); e.stopPropagation(); step(-1, true); }
+          else if (item.classList.contains("is-right")) { e.preventDefault(); e.stopPropagation(); step(1, true); }
+        }, true);
+        root.addEventListener("keydown", function (e) {
+          if (e.key === "ArrowLeft") { step(-1, true); } else if (e.key === "ArrowRight") { step(1, true); }
+        });
+        root.addEventListener("mouseenter", function () { hovering = true; });
+        root.addEventListener("mouseleave", function () { hovering = false; });
+        root.addEventListener("focusin", function (e) { var fv = false; try { fv = e.target.matches(":focus-visible"); } catch (err) { fv = true; } focusing = fv; });
+        root.addEventListener("focusout", function (e) { if (!root.contains(e.relatedTarget)) { focusing = false; } });
+        var x0 = null;
+        stage.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        stage.addEventListener("touchend", function (e) {
+          if (x0 === null) { return; }
+          var dx = e.changedTouches[0].clientX - x0; x0 = null;
+          if (Math.abs(dx) > 50) { step(dx < 0 ? 1 : -1, true); }
+        }, { passive: true });
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }, { threshold: 0.15 }).observe(root);
+        }
+        if ("ResizeObserver" in window) { new ResizeObserver(function () { updateHeight(); }).observe(stage); all.forEach(function (el) { new ResizeObserver(updateHeight).observe(el); }); }
+        new MutationObserver(updateMeta).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+
+        refresh();
+        return { refresh: refresh, next: function () { step(1, true); }, prev: function () { step(-1, true); }, goTo: goTo, get index() { return idx; }, get size() { return active.length; } };
+      }
+      window.VRotator = VRotator;
+
+      /* #ecosistema: las 4 tarjetas */
+      var eco = document.querySelector("#ecosistema .v-rotator");
+      if (eco) { VRotator(eco); }
+
+      /* #proyectos: subconjunto activo según el filtro (el filtro existente marca card.hidden) */
+      var projRoot = document.querySelector("#proyectos .v-rotator");
+      if (projRoot) {
+        var projRot = VRotator(projRoot, {
+          getItems: function () { return Array.prototype.filter.call(projRoot.querySelectorAll(".project-card"), function (c) { return !c.hidden; }); }
+        });
+        Array.prototype.forEach.call(document.querySelectorAll(".filter-btn"), function (b) {
+          b.addEventListener("click", function () { projRot.refresh(); });
+        });
+      }
     })();
   </script>
 </body>
