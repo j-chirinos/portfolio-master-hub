@@ -6,6 +6,8 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data:; frame-src 'self' https://app.powerbi.com; base-uri 'none'; form-action 'none'">
   <meta name="description" content="Portafolio de Senior Data Analyst & Process Automation Lead: BI, SSoT, ETL y automatización en banca y seguros.">
   <title>Portfolio Master Hub | Data Analyst &amp; Automation Lead</title>
+  <link rel="icon" type="image/png" href="jchanalytics.png">
+  <link rel="apple-touch-icon" href="jchanalytics.png">
   <style>
     :root {
       /* Paleta ciberpunk (alineada con la cabecera de LinkedIn) */
@@ -437,6 +439,14 @@
       .hero-container > .stats-grid { margin-top: 12px; }
     }
 
+    /* Marca: logotipo jchanalytics (decorativo) */
+    .brand { display: inline-flex; align-items: center; gap: 10px; }
+    .brand-logo { display: block; width: 28px; height: 28px; object-fit: contain; filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.45)); }
+    .badge { vertical-align: middle; }
+    .hero .badge { display: inline-flex; align-items: center; gap: 8px; }
+    .mark-logo { display: inline-block; width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.4)); }
+    .hero .badge .mark-logo { margin-right: 0; }
+
     /* ============================================================
        ROTACIÓN VERTICAL EN PÁGINAS WEB (.v-rotator)
        Carrusel de una fila, 3 posiciones visibles (izq. / centro / der.),
@@ -487,6 +497,11 @@
     .v-rotator-meta[hidden] { display: none; }
     .v-rotator-meta.is-ready { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; }
     .v-rotator-count { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+    .v-rotator-info { display: flex; align-items: center; gap: 12px; }
+    .v-rotator-pin { min-height: 32px; padding: 4px 12px; font: inherit; font-size: .78rem; letter-spacing: .04em; color: var(--accent-blue); background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 999px; cursor: pointer; transition: box-shadow .18s, background .18s; }
+    .v-rotator-pin:hover, .v-rotator-pin:focus-visible { background: rgba(0, 255, 255, 0.12); box-shadow: 0 0 14px rgba(0, 255, 255, 0.5); outline: none; }
+    .v-rotator-pin[aria-pressed="true"] { background: rgba(0, 255, 255, 0.18); border-color: var(--accent-blue); }
+    .v-rotator-pin[hidden] { display: none; }
     .v-rotator-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
     .v-dot { width: 24px; height: 24px; padding: 0; background: transparent; border: 0; cursor: pointer; display: grid; place-items: center; }
     .v-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(0, 255, 255, 0.5); background: transparent; transition: all .2s; }
@@ -511,7 +526,7 @@
 <body>
   <nav aria-label="Principal">
     <div class="container">
-      <div class="brand">J.<span> Chirinos</span></div>
+      <div class="brand"><img class="brand-logo" src="jchanalytics.png" width="28" height="28" alt="" aria-hidden="true">J.<span> Chirinos</span></div>
       <ul>
         <li><a href="#impacto">Impacto</a></li>
         <li><a href="#proyectos">Proyectos</a></li>
@@ -527,7 +542,7 @@
   <header class="hero">
     <div class="container hero-container">
       <div class="hero-text">
-      <span class="badge">Portfolio Master Hub</span>
+      <span class="badge"><img class="mark-logo" src="jchanalytics.png" width="20" height="20" alt="" aria-hidden="true">Portfolio Master Hub</span>
       <p class="hero-greeting">👋 Hola, soy <strong>J. Chirinos</strong></p>
       <h1>Senior Data Analyst &amp; <span class="grad">Process Automation Lead</span></h1>
       <div class="hero-badges">
@@ -601,7 +616,7 @@
           <button class="filter-btn" type="button" data-filter="ia" aria-pressed="false">IA Generativa</button>
         </div>
 
-        <div class="v-rotator" role="group" aria-label="Carrusel de proyectos" data-vr-interval="5500">
+        <div class="v-rotator" role="group" aria-label="Carrusel de proyectos">
           <button class="v-rotator-btn prev" type="button" aria-label="Anterior">&#8249;</button>
           <div class="v-rotator-stage" id="projects">
           <article class="project-card" data-category="freelance bi automatizacion">
@@ -761,7 +776,7 @@
       <div class="container">
         <h2 id="t-eco">Ecosistema de Repositorios</h2>
         <p class="lead">Repositorios open source que complementan este portafolio.</p>
-        <div class="v-rotator" role="group" aria-label="Carrusel de repositorios" data-vr-interval="5500">
+        <div class="v-rotator" role="group" aria-label="Carrusel de repositorios">
           <button class="v-rotator-btn prev" type="button" aria-label="Anterior">&#8249;</button>
           <div class="v-rotator-stage">
           <div class="box">
@@ -852,7 +867,7 @@
   <footer>
     <div class="container">
       <div class="footer-card">
-        <h2>J. Chirinos | Data Analyst &amp; AI Solutions Specialist</h2>
+        <h2><img class="mark-logo" src="jchanalytics.png" width="20" height="20" alt="" aria-hidden="true">J. Chirinos | Data Analyst &amp; AI Solutions Specialist</h2>
         <div class="footer-actions">
           <a id="cvLink" class="btn primary" href="https://drive.google.com/file/d/1C6TKaWsjZYNsxffX64WAJ1Ochlh9cTDJ/view?usp=drive_link" target="_blank" rel="noopener noreferrer">📄 Descargar CV (PDF)</a>
           <a class="btn ghost" href="https://www.linkedin.com/in/j-chirinos-662955195" target="_blank" rel="noopener noreferrer">🔗 LinkedIn</a>
@@ -1357,27 +1372,36 @@
     (function () {
       "use strict";
       var STEP_MS = 650;
-      var L10N = { es: { go: "Ir a la tarjeta " }, en: { go: "Go to card " } };
+      var L10N = {
+        es: { go: "Ir a la tarjeta ", pin: "\u23F8 Fijar", auto: "\u25B6 Auto", pinTip: "Fijar la tarjeta actual (detiene la rotación)", autoTip: "Reanudar la rotación automática" },
+        en: { go: "Go to card ", pin: "\u23F8 Pin", auto: "\u25B6 Auto", pinTip: "Pin the current card (stops rotation)", autoTip: "Resume automatic rotation" }
+      };
+      /* Intervalos de auto-avance: escritorio 5 s, móvil (<= 768px) 7 s; responde al cambiar el ancho de ventana */
+      var MS_DESKTOP = 5000, MS_MOBILE = 7000;
+      var mqMobile = window.matchMedia ? window.matchMedia("(max-width: 768px)") : null;
+      function autoMs() { return mqMobile && mqMobile.matches ? MS_MOBILE : MS_DESKTOP; }
       function reduced() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
       function lang() { return document.documentElement.lang === "en" ? "en" : "es"; }
       function reflow(el) { return el.offsetWidth; }
       function modalOpen() {
-        return ["projectModal", "skillsModal"].some(function (id) { var m = document.getElementById(id); return m && m.classList.contains("open"); });
+        return ["projectModal", "skillsModal"].some(function (id) { var m = document.getElementById(id); return m && (m.classList.contains("open") || m.getAttribute("aria-hidden") === "false"); });
       }
 
-      /* opts: { interval, getItems() -> HTMLElement[] (subconjunto activo, en orden) } */
+      /* opts: { getItems() -> HTMLElement[] (subconjunto activo, en orden) } */
       function VRotator(root, opts) {
         opts = opts || {};
         var stage = root.querySelector(".v-rotator-stage");
         var prevBtn = root.querySelector(".v-rotator-btn.prev"), nextBtn = root.querySelector(".v-rotator-btn.next");
         var all = Array.prototype.slice.call(stage.children);
-        var interval = opts.interval || parseInt(root.getAttribute("data-vr-interval"), 10) || 5500;
-        var active = [], idx = 0, timer = null, hovering = false, focusing = false, onScreen = true;
+        var active = [], idx = 0, timer = null, hovering = false, focusing = false, touching = false, pinned = false, onScreen = true, wasPaused = false;
 
         var meta = document.createElement("div"); meta.className = "v-rotator-meta"; meta.hidden = true;
         var count = document.createElement("span"); count.className = "v-rotator-count";
         var dots = document.createElement("div"); dots.className = "v-rotator-dots";
-        meta.appendChild(count); meta.appendChild(dots);
+        var info = document.createElement("div"); info.className = "v-rotator-info";
+        var pin = document.createElement("button"); pin.type = "button"; pin.className = "v-rotator-pin"; pin.setAttribute("aria-pressed", "false");
+        info.appendChild(count); info.appendChild(pin);
+        meta.appendChild(info); meta.appendChild(dots);
         root.insertAdjacentElement("afterend", meta);
 
         all.forEach(function (el) { el.classList.add("v-rotator-item", "is-offstage"); el._vrSlot = "off"; });
@@ -1440,6 +1464,8 @@
           var n = active.length, d = L10N[lang()];
           meta.hidden = n < 2; prevBtn.hidden = nextBtn.hidden = n < 2;
           count.textContent = (idx + 1) + " / " + n;
+          pin.textContent = pinned ? d.auto : d.pin; pin.title = pinned ? d.autoTip : d.pinTip;
+          pin.setAttribute("aria-pressed", pinned ? "true" : "false"); pin.hidden = reduced();
           dots.textContent = "";
           if (n < 2) { return; }
           active.forEach(function (_, k) {
@@ -1464,13 +1490,15 @@
           updateHeight(); updateMeta();
         }
 
-        function paused() { return hovering || focusing || !onScreen || document.hidden || modalOpen(); }
+        function paused() { return pinned || hovering || focusing || touching || !onScreen || document.hidden || modalOpen(); }
         function stop() { if (timer) { clearInterval(timer); timer = null; } }
         function restart() {
-          stop();
+          stop(); wasPaused = paused();
           if (active.length < 2 || reduced()) { return; }
-          timer = setInterval(function () { if (!paused()) { step(1, false); } }, interval);
+          timer = setInterval(function () { if (!paused()) { step(1, false); } }, autoMs());
         }
+        /* Al salir de un estado de pausa el ciclo reinicia desde cero (sin salto inmediato) */
+        function sync() { var p = paused(); if (wasPaused && !p) { restart(); } else { wasPaused = p; } }
         function step(dir, manual) {
           var n = active.length;
           if (n < 2) { return; }
@@ -1494,25 +1522,40 @@
         root.addEventListener("keydown", function (e) {
           if (e.key === "ArrowLeft") { step(-1, true); } else if (e.key === "ArrowRight") { step(1, true); }
         });
-        root.addEventListener("mouseenter", function () { hovering = true; });
-        root.addEventListener("mouseleave", function () { hovering = false; });
+        pin.addEventListener("click", function () { pinned = !pinned; updateMeta(); if (pinned) { stop(); wasPaused = true; } else { restart(); } });
+        /* Hover: solo la tarjeta central pausa (no el vacío ni las laterales); con touch no aplica */
+        function centerOf(node) { var it = node && node.closest ? node.closest(".v-rotator-item") : null; return it && stage.contains(it) && it.classList.contains("is-center") ? it : null; }
+        stage.addEventListener("pointerover", function (e) { if (e.pointerType !== "touch") { hovering = !!centerOf(e.target); sync(); } });
+        stage.addEventListener("pointerout", function (e) { if (e.pointerType !== "touch") { hovering = !!centerOf(e.relatedTarget); sync(); } });
+        stage.addEventListener("pointerleave", function () { hovering = false; sync(); });
         root.addEventListener("focusin", function (e) { var fv = false; try { fv = e.target.matches(":focus-visible"); } catch (err) { fv = true; } focusing = fv; });
-        root.addEventListener("focusout", function (e) { if (!root.contains(e.relatedTarget)) { focusing = false; } });
+        root.addEventListener("focusout", function (e) { if (!root.contains(e.relatedTarget)) { focusing = false; sync(); } });
         var x0 = null;
-        stage.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        stage.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; touching = !!centerOf(e.target); }, { passive: true });
+        function touchDone() { touching = false; sync(); }
+        stage.addEventListener("touchcancel", function () { x0 = null; touchDone(); }, { passive: true });
         stage.addEventListener("touchend", function (e) {
+          touchDone();
           if (x0 === null) { return; }
           var dx = e.changedTouches[0].clientX - x0; x0 = null;
           if (Math.abs(dx) > 50) { step(dx < 0 ? 1 : -1, true); }
         }, { passive: true });
         if ("IntersectionObserver" in window) {
-          new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; }, { threshold: 0.15 }).observe(root);
+          new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; sync(); }, { threshold: 0.15 }).observe(root);
         }
+        document.addEventListener("visibilitychange", sync);
+        /* Modales (#projectModal / #skillsModal): rotador 100 % estático mientras estén abiertos; al cerrar, ciclo limpio */
+        ["projectModal", "skillsModal"].forEach(function (id) {
+          var m = document.getElementById(id);
+          if (m) { new MutationObserver(sync).observe(m, { attributes: true, attributeFilter: ["class", "aria-hidden"] }); }
+        });
+        if (mqMobile) { var onMq = function () { restart(); }; if (mqMobile.addEventListener) { mqMobile.addEventListener("change", onMq); } else if (mqMobile.addListener) { mqMobile.addListener(onMq); } }
         if ("ResizeObserver" in window) { new ResizeObserver(function () { updateHeight(); }).observe(stage); all.forEach(function (el) { new ResizeObserver(updateHeight).observe(el); }); }
         new MutationObserver(updateMeta).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+        if (window.matchMedia) { try { window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", function () { updateMeta(); restart(); }); } catch (err) { /* navegador antiguo */ } }
 
         refresh();
-        return { refresh: refresh, next: function () { step(1, true); }, prev: function () { step(-1, true); }, goTo: goTo, get index() { return idx; }, get size() { return active.length; } };
+        return { refresh: refresh, get pinned() { return pinned; }, next: function () { step(1, true); }, prev: function () { step(-1, true); }, goTo: goTo, get index() { return idx; }, get size() { return active.length; } };
       }
       window.VRotator = VRotator;
 

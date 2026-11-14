@@ -10,7 +10,7 @@ Implementado en `index.html` (secciones `#ecosistema` y `#proyectos`). Respaldo 
 ## 1. Estructura HTML
 
 ```html
-<div class="v-rotator" role="group" aria-label="Carrusel de repositorios" data-vr-interval="5500">
+<div class="v-rotator" role="group" aria-label="Carrusel de repositorios">
   <button class="v-rotator-btn prev" type="button" aria-label="Anterior">&#8249;</button>
   <div class="v-rotator-stage">
     <div class="box">…</div>      <!-- cada hijo directo del stage es una tarjeta -->
@@ -63,7 +63,6 @@ desplazamientos verticales, y **sin auto-avance** (solo navegación manual).
 
 ```js
 var rot = VRotator(rootElement, {
-  interval: 5500,                 // ms; también vale data-vr-interval
   getItems: function () { … }     // opcional: subconjunto activo, en orden (por defecto: hijos no `hidden`)
 });
 rot.refresh();   // recalcula el subconjunto y reinicia en el índice 0 (sin animar)
@@ -89,10 +88,20 @@ abajo en el lado opuesto.
 del teclado dentro del rotador y deslizamiento táctil (> 50 px). Las tarjetas no centrales llevan
 `aria-hidden="true"` y sus enlaces/botones `tabindex="-1"`.
 
-**Temporización:** auto-avance cada `5500 ms`; se pausa con `mouseenter`/`mouseleave`, con foco de teclado
-(`focusin` con `:focus-visible` / `focusout`), cuando el rotador no está en pantalla (`IntersectionObserver`),
-con la pestaña oculta y mientras `#projectModal` o `#skillsModal` tengan la clase `open` (ajusta `modalOpen()`
-para otros modales). Cualquier acción manual reinicia la cuenta.
+**Temporización (auto-avance hacia la derecha):**
+
+| Regla | Comportamiento |
+|---|---|
+| Intervalo adaptable | Escritorio (`> 768px`): **5000 ms**. Móvil (`<= 768px`): **7000 ms**. Se lee con `matchMedia("(max-width: 768px)")` y el temporizador se reinicia si cambia el ancho de ventana. Ya no se usa `data-vr-interval` |
+| Reinicio manual | Flechas, puntos, tarjeta lateral, teclado o swipe reinician la cuenta desde cero |
+| Hover | Pausa **solo** si el puntero está sobre la tarjeta central (`.is-center`, `pointerover`/`pointerout` delegados en el stage); el vacío y las laterales no pausan; no aplica a punteros táctiles |
+| Botón de fijado | `.v-rotator-pin` junto al contador (`type="button"`, `aria-pressed`): `⏸ Fijar` / `▶ Auto` (ES) y `⏸ Pin` / `▶ Auto` (EN). Fijado detiene el ciclo hasta pulsarlo de nuevo |
+| Táctil / teclado | Pausa mientras el dedo toca la tarjeta central (`touchstart`/`touchend`/`touchcancel`) y mientras hay foco de teclado dentro del rotador (`focusin` con `:focus-visible` / `focusout`) |
+| Modales | Con `#projectModal` o `#skillsModal` abiertos (`.open` / `aria-hidden="false"`) el rotador queda 100 % estático; al cerrarse el ciclo se reanuda desde cero (salvo que esté fijado) |
+| Pestaña / pantalla | Pausa con `document.hidden` (`visibilitychange`) y cuando el rotador no está en pantalla (`IntersectionObserver`) |
+| Movimiento reducido | Con `prefers-reduced-motion: reduce` no hay auto-avance, ni botón de fijado; solo navegación manual |
+
+Al salir de cualquier pausa (`sync()`), el temporizador se reinicia, así que nunca hay un salto inmediato al reanudar.
 
 ## 4. Integración con filtros (`#proyectos`)
 
@@ -117,6 +126,7 @@ document.querySelectorAll(".filter-btn").forEach(function (b) {
 ## 6. Notas de verificación
 
 - Probado con 8, 4, 3, 2, 1 y 0 tarjetas activas; botones, puntos, clic lateral, teclado y filtros.
+- Intervalos medidos en local: ~5,1 s (1280 px) y ~7,1 s (491 px); hover central, fijado y modal abierto detienen el ciclo.
 - `prefers-reduced-motion` se respeta en CSS y en JS (`matchMedia` se consulta en cada acción).
 - Un panel de navegador oculto congela el reloj de animaciones CSS: para medir la animación hay que tener la
   pestaña visible.
