@@ -1195,7 +1195,7 @@
           if (p.demo) {
             var f = document.createElement("iframe");
             f.className = "proj-frame"; f.src = p.demo; f.title = u.frame + " — " + p.name;
-            f.setAttribute("sandbox", "allow-scripts"); f.setAttribute("referrerpolicy", "no-referrer"); f.setAttribute("loading", "lazy");
+            f.setAttribute("sandbox", "allow-scripts allow-same-origin"); f.setAttribute("referrerpolicy", "no-referrer"); f.setAttribute("loading", "lazy");
             box.appendChild(f);
             box.appendChild(el("p", "proj-note", u.note));
             var a = el("a", "proj-link", u.newTab);
