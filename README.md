@@ -42,7 +42,6 @@ Abrir <http://localhost:8080>. También funciona abriendo `index.html` directame
 ## Pendiente
 
 - Completar las métricas de ROI operativo con cifras reales verificadas por el autor (hoy se muestran de forma cualitativa).
-- Enlazar en `index.html` los repositorios del ecosistema (ya publicados en GitHub): [segubot-ocr-agent](https://github.com/j-chirinos/segubot-ocr-agent), [v15-sports-predictor](https://github.com/j-chirinos/v15-sports-predictor), [ssot-data-normalizer](https://github.com/j-chirinos/ssot-data-normalizer), [jw-solutions-utility-hub](https://github.com/j-chirinos/jw-solutions-utility-hub).
 
 ---
 
@@ -55,4 +54,4 @@ Central portfolio of a **Senior Data Analyst & Process Automation Lead** (JW-Sol
 - **Security:** restrictive Content-Security-Policy via `<meta>`, no `innerHTML`, no third-party resources.
 - **Accessibility:** `aria-pressed` filters, visible focus, `prefers-reduced-motion`, responsive layout.
 - **Run locally:** `python -m http.server 8080` inside the folder, then open <http://localhost:8080> (or open `index.html` directly).
-- **Pending:** replace qualitative ROI metrics with author-verified figures; link the published repositories from `index.html`.
+- **Pending:** replace qualitative ROI metrics with author-verified figures.
