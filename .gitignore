@@ -1,0 +1,11 @@
+# Respaldos locales de iteraciones de diseño
+*.bak
+*.bak_*
+index.html.bak*
+
+# Sistema / IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.env
